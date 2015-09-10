@@ -15,6 +15,7 @@
 		A52609CC1BA1BA0D002CDC22 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A52609CB1BA1BA0D002CDC22 /* Images.xcassets */; };
 		A52609CF1BA1BA0D002CDC22 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = A52609CD1BA1BA0D002CDC22 /* LaunchScreen.xib */; };
 		A52609DB1BA1BA0D002CDC22 /* Virtual_TouristTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52609DA1BA1BA0D002CDC22 /* Virtual_TouristTests.swift */; };
+		A52609E51BA1C143002CDC22 /* CoreDataStackManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52609E41BA1C143002CDC22 /* CoreDataStackManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +41,7 @@
 		A52609D41BA1BA0D002CDC22 /* Virtual TouristTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Virtual TouristTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A52609D91BA1BA0D002CDC22 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A52609DA1BA1BA0D002CDC22 /* Virtual_TouristTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Virtual_TouristTests.swift; sourceTree = "<group>"; };
+		A52609E41BA1C143002CDC22 /* CoreDataStackManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStackManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +84,7 @@
 			isa = PBXGroup;
 			children = (
 				A52609BF1BA1BA0D002CDC22 /* AppDelegate.swift */,
+				A52609E41BA1C143002CDC22 /* CoreDataStackManager.swift */,
 				A52609C41BA1BA0D002CDC22 /* MasterViewController.swift */,
 				A52609C61BA1BA0D002CDC22 /* DetailViewController.swift */,
 				A52609C81BA1BA0D002CDC22 /* Main.storyboard */,
@@ -221,6 +224,7 @@
 				A52609C31BA1BA0D002CDC22 /* Virtual_Tourist.xcdatamodeld in Sources */,
 				A52609C01BA1BA0D002CDC22 /* AppDelegate.swift in Sources */,
 				A52609C51BA1BA0D002CDC22 /* MasterViewController.swift in Sources */,
+				A52609E51BA1C143002CDC22 /* CoreDataStackManager.swift in Sources */,
 				A52609C71BA1BA0D002CDC22 /* DetailViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -417,6 +421,7 @@
 				A52609E01BA1BA0D002CDC22 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		A52609E11BA1BA0D002CDC22 /* Build configuration list for PBXNativeTarget "Virtual TouristTests" */ = {
 			isa = XCConfigurationList;
@@ -425,6 +430,7 @@
 				A52609E31BA1BA0D002CDC22 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
