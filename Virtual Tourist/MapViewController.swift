@@ -23,6 +23,18 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
+        configureGestureRecognizer()
+        
+        configureLocationManager()
+    }
+    
+    private func configureGestureRecognizer() {
+        let longPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: "onLongPress:")
+        longPressGestureRecognizer.minimumPressDuration = 0.5
+        mapView.addGestureRecognizer(longPressGestureRecognizer)
+    }
+
+    private func configureLocationManager() {
         locationManager.requestWhenInUseAuthorization()
         
         if(CLLocationManager.locationServicesEnabled()) {
@@ -31,7 +43,13 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
             locationManager.startUpdatingLocation()
         }
     }
-
+    
+    func pin(coordinate: CLLocationCoordinate2D) {
+        let annotation = MKPointAnnotation()
+        annotation.coordinate = coordinate
+        
+        mapView.addAnnotation(annotation)
+    }
     
     // MARK: - Segues
 
@@ -39,6 +57,21 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
         
     }
 
+}
+
+extension MapViewController {
+    
+    func onLongPress(gestureRecognizer: UIGestureRecognizer) {
+        if gestureRecognizer.state != UIGestureRecognizerState.Began {
+            return
+        }
+        
+        let pressPoint = gestureRecognizer.locationInView(mapView)
+        let pressCoordinate = mapView.convertPoint(pressPoint, toCoordinateFromView: mapView)
+        
+        pin(pressCoordinate)
+    }
+    
 }
 
 extension MapViewController: MKMapViewDelegate {
