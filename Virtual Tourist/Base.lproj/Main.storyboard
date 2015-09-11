@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="rS3-R9-Ivy">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--Virtual Tourist-->
@@ -31,25 +32,27 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oo3-SF-EaM">
-                                <rect key="frame" x="254" y="285" width="92" height="30"/>
-                                <state key="normal" title="Show Photos">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="Hyr-CG-G9i">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                                 <connections>
-                                    <segue destination="YEy-Ry-uId" kind="show" id="NfW-ih-Yuf"/>
+                                    <outlet property="delegate" destination="5Wf-bf-xQw" id="nOu-Os-SXT"/>
                                 </connections>
-                            </button>
+                            </mapView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstAttribute="centerY" secondItem="oo3-SF-EaM" secondAttribute="centerY" id="FAU-x0-jzi"/>
-                            <constraint firstAttribute="centerX" secondItem="oo3-SF-EaM" secondAttribute="centerX" id="iqv-PG-4jm"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="Hyr-CG-G9i" secondAttribute="trailing" constant="-16" id="XFp-MI-JzE"/>
+                            <constraint firstItem="Hyr-CG-G9i" firstAttribute="top" secondItem="Eqv-VZ-e6c" secondAttribute="topMargin" id="biQ-bC-EIY"/>
+                            <constraint firstItem="Mbw-UM-qrD" firstAttribute="top" secondItem="Hyr-CG-G9i" secondAttribute="bottom" id="fdF-Rl-Rqv"/>
+                            <constraint firstItem="Hyr-CG-G9i" firstAttribute="leading" secondItem="Eqv-VZ-e6c" secondAttribute="leadingMargin" constant="-16" id="l3N-iT-Bha"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Virtual Tourist" id="COX-K8-nqJ">
                         <barButtonItem key="backBarButtonItem" title="OK" id="ZRC-5E-4cB"/>
                     </navigationItem>
+                    <connections>
+                        <outlet property="mapView" destination="Hyr-CG-G9i" id="1KU-eI-eRq"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3tu-ry-9OB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
