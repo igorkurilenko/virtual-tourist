@@ -16,6 +16,7 @@
 		A52609CF1BA1BA0D002CDC22 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = A52609CD1BA1BA0D002CDC22 /* LaunchScreen.xib */; };
 		A52609DB1BA1BA0D002CDC22 /* Virtual_TouristTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52609DA1BA1BA0D002CDC22 /* Virtual_TouristTests.swift */; };
 		A52609E51BA1C143002CDC22 /* CoreDataStackManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52609E41BA1C143002CDC22 /* CoreDataStackManager.swift */; };
+		A52609E71BA6C563002CDC22 /* MapRegionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52609E61BA6C563002CDC22 /* MapRegionService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,6 +43,7 @@
 		A52609D91BA1BA0D002CDC22 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A52609DA1BA1BA0D002CDC22 /* Virtual_TouristTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Virtual_TouristTests.swift; sourceTree = "<group>"; };
 		A52609E41BA1C143002CDC22 /* CoreDataStackManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStackManager.swift; sourceTree = "<group>"; };
+		A52609E61BA6C563002CDC22 /* MapRegionService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapRegionService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +89,7 @@
 				A52609BF1BA1BA0D002CDC22 /* AppDelegate.swift */,
 				A52609E41BA1C143002CDC22 /* CoreDataStackManager.swift */,
 				A52609C41BA1BA0D002CDC22 /* MapViewController.swift */,
+				A52609E61BA6C563002CDC22 /* MapRegionService.swift */,
 				A52609C61BA1BA0D002CDC22 /* CollectionViewController.swift */,
 				A52609CB1BA1BA0D002CDC22 /* Images.xcassets */,
 				A52609CD1BA1BA0D002CDC22 /* LaunchScreen.xib */,
@@ -221,6 +224,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A52609E71BA6C563002CDC22 /* MapRegionService.swift in Sources */,
 				A52609C31BA1BA0D002CDC22 /* Virtual_Tourist.xcdatamodeld in Sources */,
 				A52609C01BA1BA0D002CDC22 /* AppDelegate.swift in Sources */,
 				A52609C51BA1BA0D002CDC22 /* MapViewController.swift in Sources */,

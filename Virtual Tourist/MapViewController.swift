@@ -11,32 +11,26 @@ import MapKit
 import CoreData
 import CoreLocation
 
-class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
+class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, MKMapViewDelegate, CLLocationManagerDelegate {
     @IBOutlet weak var mapView: MKMapView!
     private let locationManager = CLLocationManager()
-    private let fileManager = NSFileManager.defaultManager()
-    var mapRegionFilePath: String {
-        let url = fileManager.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first as! NSURL
+    private let mapRegionService = MapRegionArchiverService()
+    private var lastPoinAnnotation:MKPointAnnotation?
+    private lazy var sharedDataContext: NSManagedObjectContext = {
         
-        return url.URLByAppendingPathComponent("mapRegion").path!
-    }
-    
-    lazy var sharedDataContext: NSManagedObjectContext = {
-       return CoreDataStackManager.instance().managedObjectContext
-    }()
+        return CoreDataStackManager.instance().managedObjectContext
+        }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
         
         configureGestureRecognizer()
         
-        
-        if fileManager.fileExistsAtPath(mapRegionFilePath) {
-            restoreMapRegion()
-        
-        } else {
-            configureLocationManager()
+        if let region = mapRegionService.getMapRegion() {
+            mapView.setRegion(region, animated: false)
+            
+        }  else {
+            setMapRegionByCurrentLocation()
         }
     }
     
@@ -45,8 +39,8 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
         longPressGestureRecognizer.minimumPressDuration = 0.5
         mapView.addGestureRecognizer(longPressGestureRecognizer)
     }
-
-    private func configureLocationManager() {
+    
+    private func setMapRegionByCurrentLocation() {
         locationManager.requestWhenInUseAuthorization()
         
         if(CLLocationManager.locationServicesEnabled()) {
@@ -56,93 +50,89 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
         }
     }
     
-    func pin(coordinate: CLLocationCoordinate2D) {
-        let annotation = MKPointAnnotation()
-        annotation.coordinate = coordinate
-        
-        mapView.addAnnotation(annotation)
-    }
-    
     func onLongPress(gestureRecognizer: UIGestureRecognizer) {
-        if gestureRecognizer.state != UIGestureRecognizerState.Began {
+        switch gestureRecognizer.state {
+        case .Began:
+            let coordinate = getGestureCoordinate(gestureRecognizer)
+            addPointAnnotation(coordinate)
+            
+        case .Changed:
+            let coordinate = getGestureCoordinate(gestureRecognizer)
+            lastPoinAnnotation?.coordinate = coordinate
+            
+        default:
             return
         }
-        
+    }
+    
+    private func getGestureCoordinate(gestureRecognizer: UIGestureRecognizer) -> CLLocationCoordinate2D {
         let pressPoint = gestureRecognizer.locationInView(mapView)
-        let pressCoordinate = mapView.convertPoint(pressPoint, toCoordinateFromView: mapView)
-        
-        pin(pressCoordinate)
+        return mapView.convertPoint(pressPoint, toCoordinateFromView: mapView)
     }
     
-    func saveMapRegion() {
-        let region = mapView.region
-
-        let regionDictionary = [
-            "latitude": region.center.latitude,
-            "longitude": region.center.longitude,
-            "latitudeDelta": region.span.latitudeDelta,
-            "longitudeDelta": region.span.longitudeDelta
-        ]
+    func addPointAnnotation(coordinate: CLLocationCoordinate2D) {
+        lastPoinAnnotation = MKPointAnnotation()
+        lastPoinAnnotation!.coordinate = coordinate
         
-        NSKeyedArchiver.archiveRootObject(regionDictionary, toFile: mapRegionFilePath)
+        mapView.addAnnotation(lastPoinAnnotation)
     }
     
-    func restoreMapRegion() {
-        if let regionDictionary = NSKeyedUnarchiver.unarchiveObjectWithFile(mapRegionFilePath) as? [String: AnyObject] {
-            let latitude = regionDictionary["latitude"] as! CLLocationDegrees
-            let longitude = regionDictionary["longitude"] as! CLLocationDegrees
-            let center = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-            
-            let latitudeDelta = regionDictionary["latitudeDelta"] as! CLLocationDegrees
-            let longitudeDelta = regionDictionary["longitudeDelta"] as! CLLocationDegrees
-            let span = MKCoordinateSpan(latitudeDelta: latitudeDelta, longitudeDelta: longitudeDelta)
-            
-            let region = MKCoordinateRegion(center: center, span: span)
-            
-            mapView.setRegion(region, animated: false)
-        }
-    }
-    
-    // MARK: - Segues
-
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        
-    }
-
-}
-
-extension MapViewController: MKMapViewDelegate {
+    // MARK: - Map view delegate
     
     func mapView(mapView: MKMapView!, regionDidChangeAnimated animated: Bool) {
-        saveMapRegion()
+        mapRegionService.persistMapRegion(mapView.region)
     }
     
     func mapView(mapView: MKMapView!, viewForAnnotation annotation: MKAnnotation!) -> MKAnnotationView! {
-        let reuseId = "pin"
+        var result:MKAnnotationView!
+        let reuseId = "com.virtual-tourist.pin"
         
-        var pinView = mapView.dequeueReusableAnnotationViewWithIdentifier(reuseId) as? MKPinAnnotationView
-        
-        if pinView == nil {
-            pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
-            pinView!.pinColor = .Purple
+        if let annotationView = getReusableAnnotationView(reuseId) {
+            annotationView.annotation = annotation
+            result = annotationView
             
         } else {
-            pinView!.annotation = annotation
+            result = createAnnotationView(annotation, reuseId: reuseId)
         }
         
-        return pinView
+        return result
     }
-}
-
-extension MapViewController: CLLocationManagerDelegate {
+    
+    private func getReusableAnnotationView(reuseId: String) -> MKPinAnnotationView? {
+        return mapView.dequeueReusableAnnotationViewWithIdentifier(reuseId) as? MKPinAnnotationView
+    }
+    
+    private func createAnnotationView(annotation: MKAnnotation, reuseId: String) -> MKPinAnnotationView {
+        let result = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
+        result!.pinColor = .Purple
+        
+        return result
+    }
+    
+    func mapView(mapView: MKMapView!, didAddAnnotationViews views: [AnyObject]!) {
+        views.first?.setSelected(true, animated: false)
+    }
+    
+    func mapView(mapView: MKMapView!, didSelectAnnotationView view: MKAnnotationView!) {
+        println("select")
+    }
+    
+    
+    
+    // MARK: - Location manager delegate
     
     func locationManager(manager: CLLocationManager!, didUpdateLocations locations: [AnyObject]!) {
         mapView.setCenterCoordinate(locationManager.location.coordinate, animated: false)
         locationManager.stopUpdatingLocation()
     }
+    
+    // MARK: - Segues
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        
+    }
+    
 }
-
-
 
 
 
