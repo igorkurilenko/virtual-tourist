@@ -13,7 +13,13 @@ import CoreLocation
 
 class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
     @IBOutlet weak var mapView: MKMapView!
-    let locationManager = CLLocationManager()
+    private let locationManager = CLLocationManager()
+    private let fileManager = NSFileManager.defaultManager()
+    var mapRegionFilePath: String {
+        let url = fileManager.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first as! NSURL
+        
+        return url.URLByAppendingPathComponent("mapRegion").path!
+    }
     
     lazy var sharedDataContext: NSManagedObjectContext = {
        return CoreDataStackManager.instance().managedObjectContext
@@ -25,7 +31,13 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
         
         configureGestureRecognizer()
         
-        configureLocationManager()
+        
+        if fileManager.fileExistsAtPath(mapRegionFilePath) {
+            restoreMapRegion()
+        
+        } else {
+            configureLocationManager()
+        }
     }
     
     private func configureGestureRecognizer() {
@@ -51,16 +63,6 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
         mapView.addAnnotation(annotation)
     }
     
-    // MARK: - Segues
-
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        
-    }
-
-}
-
-extension MapViewController {
-    
     func onLongPress(gestureRecognizer: UIGestureRecognizer) {
         if gestureRecognizer.state != UIGestureRecognizerState.Began {
             return
@@ -72,9 +74,48 @@ extension MapViewController {
         pin(pressCoordinate)
     }
     
+    func saveMapRegion() {
+        let region = mapView.region
+
+        let regionDictionary = [
+            "latitude": region.center.latitude,
+            "longitude": region.center.longitude,
+            "latitudeDelta": region.span.latitudeDelta,
+            "longitudeDelta": region.span.longitudeDelta
+        ]
+        
+        NSKeyedArchiver.archiveRootObject(regionDictionary, toFile: mapRegionFilePath)
+    }
+    
+    func restoreMapRegion() {
+        if let regionDictionary = NSKeyedUnarchiver.unarchiveObjectWithFile(mapRegionFilePath) as? [String: AnyObject] {
+            let latitude = regionDictionary["latitude"] as! CLLocationDegrees
+            let longitude = regionDictionary["longitude"] as! CLLocationDegrees
+            let center = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+            
+            let latitudeDelta = regionDictionary["latitudeDelta"] as! CLLocationDegrees
+            let longitudeDelta = regionDictionary["longitudeDelta"] as! CLLocationDegrees
+            let span = MKCoordinateSpan(latitudeDelta: latitudeDelta, longitudeDelta: longitudeDelta)
+            
+            let region = MKCoordinateRegion(center: center, span: span)
+            
+            mapView.setRegion(region, animated: false)
+        }
+    }
+    
+    // MARK: - Segues
+
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        
+    }
+
 }
 
 extension MapViewController: MKMapViewDelegate {
+    
+    func mapView(mapView: MKMapView!, regionDidChangeAnimated animated: Bool) {
+        saveMapRegion()
+    }
     
     func mapView(mapView: MKMapView!, viewForAnnotation annotation: MKAnnotation!) -> MKAnnotationView! {
         let reuseId = "pin"
@@ -99,11 +140,6 @@ extension MapViewController: CLLocationManagerDelegate {
         mapView.setCenterCoordinate(locationManager.location.coordinate, animated: false)
         locationManager.stopUpdatingLocation()
     }
-    
-    func locationManager(manager: CLLocationManager!, didFailWithError error: NSError!) {
-        print(error)
-    }
-    
 }
 
 
