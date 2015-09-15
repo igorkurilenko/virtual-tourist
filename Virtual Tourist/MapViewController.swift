@@ -100,7 +100,7 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
     
     private func createAnnotationView(annotation: MKAnnotation, reuseId: String) -> MKPinAnnotationView {
         let result = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
-        result!.pinColor = .Purple
+        result!.pinColor = MKPinAnnotationColor.Red
         
         return result
     }

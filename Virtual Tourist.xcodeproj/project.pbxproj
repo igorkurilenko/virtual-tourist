@@ -18,6 +18,8 @@
 		A52609E51BA1C143002CDC22 /* CoreDataStackManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52609E41BA1C143002CDC22 /* CoreDataStackManager.swift */; };
 		A52609E71BA6C563002CDC22 /* MapRegionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52609E61BA6C563002CDC22 /* MapRegionService.swift */; };
 		A52609EB1BA7F490002CDC22 /* CurrentLocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52609EA1BA7F490002CDC22 /* CurrentLocationService.swift */; };
+		A52609EE1BA801EF002CDC22 /* Pin.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52609ED1BA801EF002CDC22 /* Pin.swift */; };
+		A52609F01BA801FB002CDC22 /* Photo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52609EF1BA801FB002CDC22 /* Photo.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +48,8 @@
 		A52609E41BA1C143002CDC22 /* CoreDataStackManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStackManager.swift; sourceTree = "<group>"; };
 		A52609E61BA6C563002CDC22 /* MapRegionService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapRegionService.swift; sourceTree = "<group>"; };
 		A52609EA1BA7F490002CDC22 /* CurrentLocationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrentLocationService.swift; sourceTree = "<group>"; };
+		A52609ED1BA801EF002CDC22 /* Pin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Pin.swift; sourceTree = "<group>"; };
+		A52609EF1BA801FB002CDC22 /* Photo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Photo.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +93,7 @@
 			children = (
 				A52609C81BA1BA0D002CDC22 /* Main.storyboard */,
 				A52609BF1BA1BA0D002CDC22 /* AppDelegate.swift */,
+				A52609EC1BA801D9002CDC22 /* Model */,
 				A52609E81BA7EE71002CDC22 /* Controller */,
 				A52609E91BA7EFA9002CDC22 /* Misc */,
 				A52609CB1BA1BA0D002CDC22 /* Images.xcassets */,
@@ -141,6 +146,15 @@
 				A52609EA1BA7F490002CDC22 /* CurrentLocationService.swift */,
 			);
 			name = Misc;
+			sourceTree = "<group>";
+		};
+		A52609EC1BA801D9002CDC22 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				A52609ED1BA801EF002CDC22 /* Pin.swift */,
+				A52609EF1BA801FB002CDC22 /* Photo.swift */,
+			);
+			name = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -246,6 +260,8 @@
 				A52609E71BA6C563002CDC22 /* MapRegionService.swift in Sources */,
 				A52609C31BA1BA0D002CDC22 /* Virtual_Tourist.xcdatamodeld in Sources */,
 				A52609EB1BA7F490002CDC22 /* CurrentLocationService.swift in Sources */,
+				A52609F01BA801FB002CDC22 /* Photo.swift in Sources */,
+				A52609EE1BA801EF002CDC22 /* Pin.swift in Sources */,
 				A52609C01BA1BA0D002CDC22 /* AppDelegate.swift in Sources */,
 				A52609C51BA1BA0D002CDC22 /* MapViewController.swift in Sources */,
 				A52609E51BA1C143002CDC22 /* CoreDataStackManager.swift in Sources */,
