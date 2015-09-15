@@ -11,11 +11,10 @@ import MapKit
 import CoreData
 import CoreLocation
 
-class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, MKMapViewDelegate, CLLocationManagerDelegate {
-    @IBOutlet weak var mapView: MKMapView!
-    private let locationManager = CLLocationManager()
-    private let mapRegionService = MapRegionArchiverService()
-    private var lastPoinAnnotation:MKPointAnnotation?
+class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, MKMapViewDelegate {
+    @IBOutlet weak var mapView: MKMapView!    
+    private let mapRegionService = WithCurrentLocationDetectionIfNotExists(decoratee: MapRegionArchiverService())
+    private var lastPointAnnotation:MKPointAnnotation?
     private lazy var sharedDataContext: NSManagedObjectContext = {
         
         return CoreDataStackManager.instance().managedObjectContext
@@ -24,29 +23,26 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        configureGestureRecognizer()
-        
-        if let region = mapRegionService.getMapRegion() {
-            mapView.setRegion(region, animated: false)
-            
-        }  else {
-            setMapRegionByCurrentLocation()
-        }
+        initMapView()
     }
     
-    private func configureGestureRecognizer() {
+    private func initMapView() {
+        initGestureRecognizer()
+        
+        initMapRegion()
+    }
+    
+    private func initGestureRecognizer() {
         let longPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: "onLongPress:")
         longPressGestureRecognizer.minimumPressDuration = 0.5
         mapView.addGestureRecognizer(longPressGestureRecognizer)
     }
     
-    private func setMapRegionByCurrentLocation() {
-        locationManager.requestWhenInUseAuthorization()
-        
-        if(CLLocationManager.locationServicesEnabled()) {
-            locationManager.delegate = self
-            locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
-            locationManager.startUpdatingLocation()
+    private func initMapRegion() {
+        mapRegionService.getMapRegion { mapRegion in
+            if let mapRegion = mapRegion {
+                self.mapView.setRegion(mapRegion, animated: true)
+            }
         }
     }
     
@@ -58,7 +54,7 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
             
         case .Changed:
             let coordinate = getGestureCoordinate(gestureRecognizer)
-            lastPoinAnnotation?.coordinate = coordinate
+            lastPointAnnotation?.coordinate = coordinate
             
         default:
             return
@@ -71,10 +67,10 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
     }
     
     func addPointAnnotation(coordinate: CLLocationCoordinate2D) {
-        lastPoinAnnotation = MKPointAnnotation()
-        lastPoinAnnotation!.coordinate = coordinate
+        lastPointAnnotation = MKPointAnnotation()
+        lastPointAnnotation!.coordinate = coordinate
         
-        mapView.addAnnotation(lastPoinAnnotation)
+        mapView.addAnnotation(lastPointAnnotation)
     }
     
     // MARK: - Map view delegate
@@ -115,16 +111,7 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
     
     func mapView(mapView: MKMapView!, didSelectAnnotationView view: MKAnnotationView!) {
         println("select")
-    }
-    
-    
-    
-    // MARK: - Location manager delegate
-    
-    func locationManager(manager: CLLocationManager!, didUpdateLocations locations: [AnyObject]!) {
-        mapView.setCenterCoordinate(locationManager.location.coordinate, animated: false)
-        locationManager.stopUpdatingLocation()
-    }
+    }                
     
     // MARK: - Segues
     
