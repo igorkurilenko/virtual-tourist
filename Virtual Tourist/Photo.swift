@@ -11,12 +11,15 @@ import CoreData
 
 @objc(Photo)
 
-class Photo: NSManagedObject {
-    
+class Photo: NSManagedObject {    
     @NSManaged var id: NSNumber
     @NSManaged var url: String
     @NSManaged var filePath: String
     @NSManaged var pin: Pin?
+    
+    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
+        super.init(entity: entity, insertIntoManagedObjectContext: context)
+    }
     
     init(id: NSNumber, url: String, filePath: String, context: NSManagedObjectContext) {
         let entity = NSEntityDescription.entityForName("Photo", inManagedObjectContext: context)!

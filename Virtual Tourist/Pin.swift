@@ -12,11 +12,14 @@ import MapKit
 
 @objc(Pin)
 
-class Pin: NSManagedObject {
-    
-    @NSManaged var latitude:Double
-    @NSManaged var longitude:Double
+class Pin: NSManagedObject{
+    @NSManaged var latitude:NSNumber
+    @NSManaged var longitude:NSNumber
     @NSManaged var photos: [Photo]
+    
+    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
+        super.init(entity: entity, insertIntoManagedObjectContext: context)
+    }
     
     init(coordinate: CLLocationCoordinate2D, context: NSManagedObjectContext) {
         let entity = NSEntityDescription.entityForName("Pin", inManagedObjectContext: context)!

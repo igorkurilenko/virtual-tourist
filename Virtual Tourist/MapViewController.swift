@@ -13,15 +13,30 @@ import CoreLocation
 
 class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, MKMapViewDelegate {
     @IBOutlet weak var mapView: MKMapView!    
-    private let mapRegionService = WithCurrentLocationDetectionIfNotExists(decoratee: MapRegionArchiverService())
-    private var lastPointAnnotation:MKPointAnnotation?
+    private let mapRegionService = WithCurrentLocationDetectionIfNotExists(
+        decoratee: MapRegionArchiverService())
+    private var lastPin:Pin?
     private lazy var sharedDataContext: NSManagedObjectContext = {
         
         return CoreDataStackManager.instance().managedObjectContext
         }()
+    private lazy var fetchedResultsController: NSFetchedResultsController = {
+        let fetchRequest = NSFetchRequest(entityName: "Pin")
+        
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "latitude", ascending: false)]
+        
+        return NSFetchedResultsController(
+            fetchRequest: fetchRequest,
+            managedObjectContext: self.sharedDataContext,
+            sectionNameKeyPath: nil,
+            cacheName: nil)
+    } ()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        fetchedResultsController.delegate = self
+        fetchedResultsController.performFetch(nil)
         
         initMapView()
     }
@@ -30,6 +45,8 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
         initGestureRecognizer()
         
         initMapRegion()
+        
+        mapView.addAnnotations(fetchedResultsController.fetchedObjects)
     }
     
     private func initGestureRecognizer() {
@@ -50,11 +67,14 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
         switch gestureRecognizer.state {
         case .Began:
             let coordinate = getGestureCoordinate(gestureRecognizer)
-            addPointAnnotation(coordinate)
+            addPin(coordinate)
             
         case .Changed:
             let coordinate = getGestureCoordinate(gestureRecognizer)
-            lastPointAnnotation?.coordinate = coordinate
+            lastPin?.coordinate = coordinate
+            
+        case .Ended:
+            CoreDataStackManager.instance().saveContext()
             
         default:
             return
@@ -66,11 +86,10 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
         return mapView.convertPoint(pressPoint, toCoordinateFromView: mapView)
     }
     
-    func addPointAnnotation(coordinate: CLLocationCoordinate2D) {
-        lastPointAnnotation = MKPointAnnotation()
-        lastPointAnnotation!.coordinate = coordinate
+    private func addPin(coordinate: CLLocationCoordinate2D) {
+        lastPin = Pin(coordinate: coordinate, context: sharedDataContext)
         
-        mapView.addAnnotation(lastPointAnnotation)
+        mapView.addAnnotation(lastPin)
     }
     
     // MARK: - Map view delegate
@@ -118,11 +137,21 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
     }
-    
 }
 
-
-
+extension Pin: MKAnnotation {
+    
+    var coordinate: CLLocationCoordinate2D {
+        get {
+            return CLLocationCoordinate2D(latitude: self.latitude as! Double, longitude: self.longitude as! Double)
+        }
+        
+        set {
+            latitude = newValue.latitude
+            longitude = newValue.longitude
+        }
+    }
+}
 
 
 
