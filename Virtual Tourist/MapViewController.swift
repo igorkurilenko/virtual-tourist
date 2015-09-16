@@ -50,7 +50,7 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
     private func initMapView() {
         initGestureRecognizer()
         initMapRegion()
-        mapView.addAnnotations(fetchedResultsController.fetchedObjects)        
+        mapView.addAnnotations(fetchedResultsController.fetchedObjects)
     }
     
     private func printError(error: NSError) {
@@ -134,10 +134,6 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
         return result
     }
     
-    func mapView(mapView: MKMapView!, didAddAnnotationViews views: [AnyObject]!) {
-        views.first?.setSelected(true, animated: false)
-    }
-    
     func mapView(mapView: MKMapView!, didSelectAnnotationView view: MKAnnotationView!) {
         let colletionViewController = storyboard!.instantiateViewControllerWithIdentifier("CollectionViewController")
             as! CollectionViewController
@@ -145,6 +141,8 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
         colletionViewController.pin = view.annotation as! Pin
         
         navigationController!.pushViewController(colletionViewController, animated: true)
+        
+        mapView.deselectAnnotation(view.annotation, animated: false)
     }
 }
 

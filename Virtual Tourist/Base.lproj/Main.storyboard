@@ -70,19 +70,47 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Photos Collection" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bLw-jG-1rZ">
-                                <rect key="frame" x="232" y="289" width="136" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" zoomEnabled="NO" scrollEnabled="NO" rotateEnabled="NO" pitchEnabled="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lXQ-dr-85h">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="150"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="150" id="qBm-ry-0qv"/>
+                                </constraints>
+                            </mapView>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="OcN-LL-8sg">
+                                <rect key="frame" x="0.0" y="150" width="600" height="450"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="LHl-0P-YdB">
+                                    <size key="itemSize" width="50" height="50"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="qGX-RR-r79">
+                                        <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                            <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
+                                    </collectionViewCell>
+                                </cells>
+                            </collectionView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstAttribute="centerY" secondItem="bLw-jG-1rZ" secondAttribute="centerY" constant="0.5" id="CJG-tj-gbB"/>
-                            <constraint firstAttribute="centerX" secondItem="bLw-jG-1rZ" secondAttribute="centerX" constant="-0.5" id="eL3-2c-aNI"/>
+                            <constraint firstItem="lXQ-dr-85h" firstAttribute="leading" secondItem="M3x-qf-sq9" secondAttribute="leadingMargin" constant="-16" id="6g9-qy-jKQ"/>
+                            <constraint firstItem="OcN-LL-8sg" firstAttribute="top" secondItem="lXQ-dr-85h" secondAttribute="bottom" id="CKq-dr-DQa"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="OcN-LL-8sg" secondAttribute="trailing" constant="-16" id="Oau-jh-HMv"/>
+                            <constraint firstItem="OcN-LL-8sg" firstAttribute="leading" secondItem="M3x-qf-sq9" secondAttribute="leadingMargin" constant="-16" id="bac-pz-LeD"/>
+                            <constraint firstItem="lXQ-dr-85h" firstAttribute="top" secondItem="M3x-qf-sq9" secondAttribute="topMargin" id="fnL-la-3bK"/>
+                            <constraint firstItem="Z0P-NX-Tgb" firstAttribute="top" secondItem="OcN-LL-8sg" secondAttribute="bottom" id="pxB-nr-6Es"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="lXQ-dr-85h" secondAttribute="trailing" constant="-16" id="y3s-hd-6u8"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="mapView" destination="lXQ-dr-85h" id="DTy-G3-F9N"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Vfi-G1-ZRk" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
