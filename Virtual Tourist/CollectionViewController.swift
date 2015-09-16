@@ -10,12 +10,12 @@ import UIKit
 
 class CollectionViewController: UIViewController {
 
-    @IBOutlet weak var detailDescriptionLabel: UILabel!
-
+    var pin:Pin!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        detailDescriptionLabel.text = "hello world!"
+
     }
 
 }

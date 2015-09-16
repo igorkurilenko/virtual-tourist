@@ -55,6 +55,10 @@ class CoreDataStackManager {
         return managedObjectContext
     }()
     
+    class func saveContext() {
+        CoreDataStackManager.instance().saveContext()
+    }
+    
     func saveContext() {
         if !self.managedObjectContext.hasChanges {
             return

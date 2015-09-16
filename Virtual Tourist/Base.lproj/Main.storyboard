@@ -58,10 +58,10 @@
             </objects>
             <point key="canvasLocation" x="552" y="64"/>
         </scene>
-        <!--View Controller-->
+        <!--Collection View Controller-->
         <scene sceneID="WJq-NH-Ygv">
             <objects>
-                <viewController id="YEy-Ry-uId" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CollectionViewController" id="YEy-Ry-uId" customClass="CollectionViewController" customModule="Virtual_Tourist" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="HoY-rQ-t1f"/>
                         <viewControllerLayoutGuide type="bottom" id="Z0P-NX-Tgb"/>

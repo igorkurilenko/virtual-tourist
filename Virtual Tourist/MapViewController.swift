@@ -12,14 +12,17 @@ import CoreData
 import CoreLocation
 
 class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, MKMapViewDelegate {
-    @IBOutlet weak var mapView: MKMapView!    
+    @IBOutlet weak var mapView: MKMapView!
+    private var lastPin:Pin?
+    private let flickrService = FlickrService(urlSession: NSURLSession.sharedSession())
     private let mapRegionService = WithCurrentLocationDetectionIfNotExists(
         decoratee: MapRegionArchiverService())
-    private var lastPin:Pin?
+    
     private lazy var sharedDataContext: NSManagedObjectContext = {
         
         return CoreDataStackManager.instance().managedObjectContext
         }()
+    
     private lazy var fetchedResultsController: NSFetchedResultsController = {
         let fetchRequest = NSFetchRequest(entityName: "Pin")
         
@@ -35,18 +38,23 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        initFetchedResultsController()
+        initMapView()
+    }
+    
+    private func initFetchedResultsController() {
         fetchedResultsController.delegate = self
         fetchedResultsController.performFetch(nil)
-        
-        initMapView()
     }
     
     private func initMapView() {
         initGestureRecognizer()
-        
         initMapRegion()
-        
-        mapView.addAnnotations(fetchedResultsController.fetchedObjects)
+        mapView.addAnnotations(fetchedResultsController.fetchedObjects)        
+    }
+    
+    private func printError(error: NSError) {
+        println("ERROR: \(error)")
     }
     
     private func initGestureRecognizer() {
@@ -74,7 +82,8 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
             lastPin?.coordinate = coordinate
             
         case .Ended:
-            CoreDataStackManager.instance().saveContext()
+            CoreDataStackManager.saveContext()
+            // todo: prefetch photos
             
         default:
             return
@@ -83,6 +92,7 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
     
     private func getGestureCoordinate(gestureRecognizer: UIGestureRecognizer) -> CLLocationCoordinate2D {
         let pressPoint = gestureRecognizer.locationInView(mapView)
+        
         return mapView.convertPoint(pressPoint, toCoordinateFromView: mapView)
     }
     
@@ -129,13 +139,12 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
     }
     
     func mapView(mapView: MKMapView!, didSelectAnnotationView view: MKAnnotationView!) {
-        println("select")
-    }                
-    
-    // MARK: - Segues
-    
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        let colletionViewController = storyboard!.instantiateViewControllerWithIdentifier("CollectionViewController")
+            as! CollectionViewController
         
+        colletionViewController.pin = view.annotation as! Pin
+        
+        navigationController!.pushViewController(colletionViewController, animated: true)
     }
 }
 
