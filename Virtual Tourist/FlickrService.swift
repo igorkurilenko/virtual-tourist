@@ -12,22 +12,24 @@ import MapKit
 // todo: refactor this service
 class FlickrService {
     typealias OnError = (NSError) -> Void
-    typealias SearchPhotosOnSuccess = ([String:AnyObject]?) -> Void
+    typealias SearchPhotosOnSuccess = NSDictionary -> Void
     
-    let BASE_URL = "https://api.flickr.com/services/rest/"
-    let METHOD_NAME = "flickr.photos.search"
-    let API_KEY = "97d099ba55b39bd64c914b116d2f1124"
-    let EXTRAS = "url_m"
-    let SAFE_SEARCH = "1"
-    let DATA_FORMAT = "json"
-    let NO_JSON_CALLBACK = "1"
-    let BOUNDING_BOX_HALF_WIDTH = 1.0
-    let BOUNDING_BOX_HALF_HEIGHT = 1.0
-    let LAT_MIN = -90.0
-    let LAT_MAX = 90.0
-    let LON_MIN = -180.0
-    let LON_MAX = 180.0
-    
+    struct SearchPhotosConfig {
+        static let BaseUrl = "https://api.flickr.com/services/rest/"
+        static let MethodName = "flickr.photos.search"
+        static let ApiKey = "97d099ba55b39bd64c914b116d2f1124"
+        static let Extras = "url_m"
+        static let SafeSearch = "1"
+        static let DataFormat = "json"
+        static let NoJsonCallback = "1"
+        static let BoundingBoxHalfWidth = 0.001
+        static let BoundingBoxHalfHeight = 0.001
+        static let LatMin = -90.0
+        static let LatMax = 90.0
+        static let LonMin = -180.0
+        static let LonMax = 180.0
+        static let RequestTimeoutSeconds:NSTimeInterval = 60
+    }
     
     var urlSession:NSURLSession
     
@@ -35,38 +37,49 @@ class FlickrService {
         self.urlSession = urlSession
     }
     
-    func searchPhotos(
-        coordinate: CLLocationCoordinate2D,
-        withPage page: Int = 1,
-        withPerPage perPage: Int = 24,
-        onError: OnError,
-        onSuccess: SearchPhotosOnSuccess) {
+    func searchPhotos(coordinate: CLLocationCoordinate2D, withPage page: Int = 1, withPerPage perPage: Int = 24,
+        onError: OnError, onSuccess: SearchPhotosOnSuccess) {
+            let request = createSearchPhotoRequest(coordinate, page: page, perPage: perPage)
             
-            let queryParams = [
-                "method": METHOD_NAME,
-                "api_key": API_KEY,
-                "bbox": createBoundingBoxString(coordinate),
-                "safe_search": SAFE_SEARCH,
-                "extras": EXTRAS,
-                "format": DATA_FORMAT,
-                "nojsoncallback": NO_JSON_CALLBACK,
-                "page": "\(page)",
-                "per_page": "\(perPage)"
-            ]
-            
-            let httpGet = HttpRequest.createGet(BASE_URL, queryParams: queryParams)!
-            
-            urlSession.dataTaskWithRequest(httpGet) {data, response, downloadError in
-                if let error = downloadError {
-                    println("Could not complete the request \(error)")
-                } else {
-                    
+            urlSession.dataTaskWithRequest(request) {data, response, downloadError in
+                self.ifErrorElse(downloadError, errorHandler: onError){
                     var parsingError: NSError? = nil
-                    let parsedResult = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parsingError) as! [String:AnyObject]
+                    let parsedResult = NSJSONSerialization.JSONObjectWithData(data,
+                        options: NSJSONReadingOptions.AllowFragments, error: &parsingError) as! NSDictionary
                     
-                    onSuccess(parsedResult)
+                    self.ifErrorElse(parsingError, errorHandler: onError){
+                        onSuccess(parsedResult)
+                    }
                 }
             }.resume()
+    }
+    
+    private func createSearchPhotoRequest(coordinate: CLLocationCoordinate2D, page: Int, perPage: Int) -> NSURLRequest {
+        let queryParams = [
+            "method": SearchPhotosConfig.MethodName,
+            "api_key": SearchPhotosConfig.ApiKey,
+            "bbox": createBoundingBoxString(coordinate),
+            "safe_search": SearchPhotosConfig.SafeSearch,
+            "extras": SearchPhotosConfig.Extras,
+            "format": SearchPhotosConfig.DataFormat,
+            "nojsoncallback": SearchPhotosConfig.NoJsonCallback,
+            "page": "\(page)",
+            "per_page": "\(perPage)"
+        ]
+        
+        let httpGet = HttpRequest.createGet(SearchPhotosConfig.BaseUrl, queryParams: queryParams)!
+        httpGet.timeoutInterval = SearchPhotosConfig.RequestTimeoutSeconds
+        
+        return httpGet
+    }
+    
+    private func ifErrorElse(error: NSError?, errorHandler: OnError, noErrorHandler: () -> Void) {
+        if let error = error {
+            errorHandler(error)
+            
+        } else {
+            noErrorHandler()
+        }
     }
     
     private func createBoundingBoxString(coordinate: CLLocationCoordinate2D) -> String {
@@ -75,10 +88,10 @@ class FlickrService {
         let longitude = coordinate.longitude
         
         /* Fix added to ensure box is bounded by minimum and maximums */
-        let bottom_left_lon = max(longitude - BOUNDING_BOX_HALF_WIDTH, LON_MIN)
-        let bottom_left_lat = max(latitude - BOUNDING_BOX_HALF_HEIGHT, LAT_MIN)
-        let top_right_lon = min(longitude + BOUNDING_BOX_HALF_HEIGHT, LON_MAX)
-        let top_right_lat = min(latitude + BOUNDING_BOX_HALF_HEIGHT, LAT_MAX)
+        let bottom_left_lon = max(longitude - SearchPhotosConfig.BoundingBoxHalfWidth, SearchPhotosConfig.LonMin)
+        let top_right_lon = min(longitude + SearchPhotosConfig.BoundingBoxHalfWidth, SearchPhotosConfig.LonMax)
+        let bottom_left_lat = max(latitude - SearchPhotosConfig.BoundingBoxHalfHeight, SearchPhotosConfig.LatMin)
+        let top_right_lat = min(latitude + SearchPhotosConfig.BoundingBoxHalfHeight, SearchPhotosConfig.LatMax)
         
         return "\(bottom_left_lon),\(bottom_left_lat),\(top_right_lon),\(top_right_lat)"
     }

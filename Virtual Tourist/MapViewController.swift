@@ -11,50 +11,24 @@ import MapKit
 import CoreData
 import CoreLocation
 
-class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, MKMapViewDelegate {
+class MapViewController: BaseUIViewController, MKMapViewDelegate {
     @IBOutlet weak var mapView: MKMapView!
-    private var lastPin:Pin?
-    private let flickrService = FlickrService(urlSession: NSURLSession.sharedSession())
+    private var lastPin:Pin!
     private let mapRegionService = WithCurrentLocationDetectionIfNotExists(
         decoratee: MapRegionArchiverService())
     
-    private lazy var sharedDataContext: NSManagedObjectContext = {
-        
-        return CoreDataStackManager.instance().managedObjectContext
-        }()
-    
-    private lazy var fetchedResultsController: NSFetchedResultsController = {
-        let fetchRequest = NSFetchRequest(entityName: "Pin")
-        
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "latitude", ascending: false)]
-        
-        return NSFetchedResultsController(
-            fetchRequest: fetchRequest,
-            managedObjectContext: self.sharedDataContext,
-            sectionNameKeyPath: nil,
-            cacheName: nil)
-    } ()
-    
     override func viewDidLoad() {
-        super.viewDidLoad()
+        super.viewDidLoad()        
         
-        initFetchedResultsController()
         initMapView()
     }
     
-    private func initFetchedResultsController() {
-        fetchedResultsController.delegate = self
-        fetchedResultsController.performFetch(nil)
-    }
     
     private func initMapView() {
         initGestureRecognizer()
         initMapRegion()
+        
         mapView.addAnnotations(fetchedResultsController.fetchedObjects)
-    }
-    
-    private func printError(error: NSError) {
-        println("ERROR: \(error)")
     }
     
     private func initGestureRecognizer() {
@@ -79,11 +53,11 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
             
         case .Changed:
             let coordinate = getGestureCoordinate(gestureRecognizer)
-            lastPin?.coordinate = coordinate
+            lastPin.coordinate = coordinate
             
         case .Ended:
             CoreDataStackManager.saveContext()
-            // todo: prefetch photos
+            searchPhotosFor(lastPin)
             
         default:
             return
@@ -135,13 +109,16 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate, M
     }
     
     func mapView(mapView: MKMapView!, didSelectAnnotationView view: MKAnnotationView!) {
-        let colletionViewController = storyboard!.instantiateViewControllerWithIdentifier("CollectionViewController")
+        let colletionViewController =
+        storyboard!.instantiateViewControllerWithIdentifier("CollectionViewController")
             as! CollectionViewController
         
         colletionViewController.pin = view.annotation as! Pin
         
         navigationController!.pushViewController(colletionViewController, animated: true)
         
+        // In case if user goes back from collection view and then wants to open collection again.
+        // If pin is selected it's impossible to open collection again.
         mapView.deselectAnnotation(view.annotation, animated: false)
     }
 }

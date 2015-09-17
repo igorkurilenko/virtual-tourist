@@ -8,19 +8,23 @@
 
 import UIKit
 import MapKit
+import CoreData
 
-class CollectionViewController: UIViewController {
-
+class CollectionViewController: BaseUIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
+    
+    @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var mapView: MKMapView!
     var pin:Pin!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
     }
-
+    
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        
+        println(pin.photos.count)
         
         initMapView()
     }
@@ -38,6 +42,23 @@ class CollectionViewController: UIViewController {
         let center = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
         
         return MKCoordinateRegion(center: center, span: span)
+    }
+    
+    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 1
+    }
+    
+    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("PhotoCollectionViewCell", forIndexPath: indexPath)
+            as! UICollectionViewCell
+        
+        return cell
+    }
+    
+    // MARK: - Fetched results controller delegate
+    
+    func controllerDidChangeContent(controller: NSFetchedResultsController) {
+        println(pin.photos.count)
     }
     
 }
