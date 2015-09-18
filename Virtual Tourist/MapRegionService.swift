@@ -27,7 +27,7 @@ class MapRegionArchiverService: MapRegionService {
     }
     
     private var mapRegionFilePath: String {
-        let url = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first as! NSURL
+        let url = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
         
         return url.URLByAppendingPathComponent("mapRegion").path!
     }

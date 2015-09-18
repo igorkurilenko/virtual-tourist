@@ -35,7 +35,10 @@ class MapViewController: BaseUIViewController, MKMapViewDelegate, NSFetchedResul
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        fetchedPinsController.performFetch(nil)
+        do {
+            try fetchedPinsController.performFetch()
+        } catch _ {
+        }
         
         initMapView()
     }
@@ -44,7 +47,7 @@ class MapViewController: BaseUIViewController, MKMapViewDelegate, NSFetchedResul
         initGestureRecognizer()
         initMapRegion()
         
-        mapView.addAnnotations(fetchedPinsController.fetchedObjects)
+        mapView.addAnnotations(fetchedPinsController.fetchedObjects as! [Pin])
     }
     
     private func initGestureRecognizer() {
@@ -94,11 +97,11 @@ class MapViewController: BaseUIViewController, MKMapViewDelegate, NSFetchedResul
     
     // MARK: - Map view delegate
     
-    func mapView(mapView: MKMapView!, regionDidChangeAnimated animated: Bool) {
+    func mapView(mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         mapRegionService.persistMapRegion(mapView.region)
     }
     
-    func mapView(mapView: MKMapView!, viewForAnnotation annotation: MKAnnotation!) -> MKAnnotationView! {
+    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
         var result:MKAnnotationView!
         let reuseId = "com.virtual-tourist.pin"
         
@@ -119,12 +122,12 @@ class MapViewController: BaseUIViewController, MKMapViewDelegate, NSFetchedResul
     
     private func createAnnotationView(annotation: MKAnnotation, reuseId: String) -> MKPinAnnotationView {
         let result = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
-        result!.pinColor = MKPinAnnotationColor.Red
+        result.pinColor = MKPinAnnotationColor.Red
         
         return result
     }
     
-    func mapView(mapView: MKMapView!, didSelectAnnotationView view: MKAnnotationView!) {
+    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
         let colletionViewController =
         storyboard!.instantiateViewControllerWithIdentifier("CollectionViewController")
             as! CollectionViewController
@@ -143,7 +146,7 @@ extension Pin: MKAnnotation {
     
     var coordinate: CLLocationCoordinate2D {
         get {
-            return CLLocationCoordinate2D(latitude: self.latitude as! Double, longitude: self.longitude as! Double)
+            return CLLocationCoordinate2D(latitude: self.latitude as Double, longitude: self.longitude as Double)
         }
         
         set {

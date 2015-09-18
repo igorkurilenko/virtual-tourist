@@ -45,7 +45,10 @@ UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        fetchedPhotosController.performFetch(nil)
+        do {
+            try fetchedPhotosController.performFetch()
+        } catch _ {
+        }
         
         initUI()
     }
@@ -54,11 +57,12 @@ UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
         editCollectionOff()
         adjustCellSize()
         collectionView.allowsMultipleSelection = true
+        self.automaticallyAdjustsScrollViewInsets = false;
     }
     
     private func adjustCellSize() {
         let flowLayout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
-        let size = (view.frame.size.width / 3.0) - 1
+        let size = (view.frame.size.width - 2.0) / 3.0
         
         flowLayout.itemSize = CGSizeMake(size, size)
     }
@@ -76,8 +80,8 @@ UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
     }
     
     private func createCoordinateRegion() -> MKCoordinateRegion {
-        let latitude = pin.latitude as! Double + 0.0025
-        let longitude = pin.longitude as! Double
+        let latitude = pin.latitude as Double + 0.0025
+        let longitude = pin.longitude as Double
         let span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
         let center = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
         
@@ -103,7 +107,7 @@ UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
         collectionView.reloadData()
         updateRemoveSelectedPhotosButtonVisibility = {
             self.removeSelectedPhotosButton.enabled =
-                self.collectionView.indexPathsForSelectedItems().count > 0
+                self.collectionView.indexPathsForSelectedItems()!.count > 0
         }
         updateRemoveSelectedPhotosButtonVisibility()
     }
@@ -129,8 +133,7 @@ UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
     }
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let sectionInfo = self.fetchedPhotosController.sections![section] as!
-        NSFetchedResultsSectionInfo
+        let sectionInfo = self.fetchedPhotosController.sections![section] 
         
         return sectionInfo.numberOfObjects
     }
@@ -152,7 +155,7 @@ UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
     
     func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
         
-    }
+    }    
     
     func controllerDidChangeContent(controller: NSFetchedResultsController) {
         

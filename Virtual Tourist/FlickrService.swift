@@ -41,13 +41,15 @@ class FlickrService {
             let request = createSearchPhotoRequest(coordinate, page: page, perPage: perPage)
             
             urlSession.dataTaskWithRequest(request) {data, response, downloadError in
-                ifErrorElse(downloadError, onError) {
-                    var parsingError: NSError? = nil
-                    let parsedResult = NSJSONSerialization.JSONObjectWithData(data,
-                        options: NSJSONReadingOptions.AllowFragments, error: &parsingError) as! NSDictionary
-                    
-                    ifErrorElse(parsingError, onError) {
+                ifErrorElse(downloadError, errorHandler: onError) {
+                    do{
+                        let parsedResult = (try NSJSONSerialization.JSONObjectWithData(data!,
+                            options: NSJSONReadingOptions.AllowFragments)) as! NSDictionary
+                        
                         onSuccess(parsedResult)
+
+                    } catch {
+                        onError(error as NSError)
                     }
                 }
             }.resume()

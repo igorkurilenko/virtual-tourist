@@ -24,7 +24,7 @@ class CoreDataStackManager {
         let fileManager = NSFileManager.defaultManager()
         let urls = fileManager.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)
         
-        return urls[urls.count-1] as! NSURL
+        return urls[urls.count-1] 
     }()
     
     lazy var storeUrl:NSURL = {
@@ -41,7 +41,15 @@ class CoreDataStackManager {
     lazy var persistentStoreCoordinator:NSPersistentStoreCoordinator = {
         let coordinator:NSPersistentStoreCoordinator = NSPersistentStoreCoordinator(managedObjectModel: self.managedObjectModel)
         var error: NSError? = nil
-        let store = coordinator.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: self.storeUrl, options: nil, error: &error)
+        let store: NSPersistentStore?
+        do {
+            store = try coordinator.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: self.storeUrl, options: nil)
+        } catch var error1 as NSError {
+            error = error1
+            store = nil
+        } catch {
+            fatalError()
+        }
         
         assert(store != nil, "Unresolved error \(error?.localizedDescription), \(error?.userInfo)\n Attempt to create store at \(self.storeUrl)")
         
@@ -65,11 +73,14 @@ class CoreDataStackManager {
         }
         
         var error: NSError? = nil
-        if self.managedObjectContext.save(&error) {
+        do {
+            try self.managedObjectContext.save()
             return
+        } catch let error1 as NSError {
+            error = error1
         }
         
-        print("Error saving context: \(error?.localizedDescription)\n\(error?.userInfo)")
+        print("Error saving context: \(error?.localizedDescription)\n\(error?.userInfo)", terminator: "")
     }
     
 }

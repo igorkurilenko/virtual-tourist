@@ -58,7 +58,7 @@ class BaseUIViewController: UIViewController {
     
     // todo: throw alert window
     private func printError(error: NSError) {
-        println("ERROR: \(error)")
+        print("ERROR: \(error)")
     }
 
 }

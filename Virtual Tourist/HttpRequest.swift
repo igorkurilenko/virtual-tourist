@@ -43,7 +43,7 @@ class HttpRequest:NSMutableURLRequest {
             
         }
         
-        return (!urlVars.isEmpty ? "?" : "") + join("&", urlVars)
+        return (!urlVars.isEmpty ? "?" : "") + urlVars.joinWithSeparator("&")
     }
     
     class func escape(value: String) -> String{
