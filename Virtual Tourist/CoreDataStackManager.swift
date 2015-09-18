@@ -21,10 +21,10 @@ class CoreDataStackManager {
     }
     
     lazy var appDocumentsDirectory:NSURL = {
-        let fileManager = NSFileManager.defaultManager()
-        let urls = fileManager.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)
+        let fileManager = NSFileManager.defaultManager(),
+        urls = fileManager.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)
         
-        return urls[urls.count-1] 
+        return urls.last!
     }()
     
     lazy var storeUrl:NSURL = {

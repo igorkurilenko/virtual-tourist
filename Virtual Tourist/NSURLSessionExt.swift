@@ -11,12 +11,17 @@ import UIKit
 
 extension NSURLSession {
     typealias OnError = (NSError) -> Void
-    typealias OnSuccess = (UIImage?) -> Void
+    typealias OnSuccess = (UIImage) -> Void
     
     func downloadImage(url: NSURL, onError: OnError, onSuccess: OnSuccess) {
         dataTaskWithURL(url) { data, response, error in
             ifErrorElse(error, errorHandler: onError){
-                onSuccess(UIImage(data: data!))
+                if let image = UIImage(data: data!) {
+                    onSuccess(image)
+                } else {
+                    //todo: implement correct error handling
+                    onError(NSError(domain: "TODO", code: 1, userInfo: nil))
+                }
             }
             }.resume()
     }

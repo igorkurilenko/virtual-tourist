@@ -66,7 +66,7 @@
         <!--Collection View Controller-->
         <scene sceneID="WJq-NH-Ygv">
             <objects>
-                <viewController storyboardIdentifier="CollectionViewController" id="YEy-Ry-uId" customClass="CollectionViewController" customModule="Virtual_Tourist" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CollectionViewController" automaticallyAdjustsScrollViewInsets="NO" id="YEy-Ry-uId" customClass="CollectionViewController" customModule="Virtual_Tourist" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="HoY-rQ-t1f"/>
                         <viewControllerLayoutGuide type="bottom" id="Z0P-NX-Tgb"/>
@@ -92,7 +92,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="150" height="150"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ImagePlaceholder" translatesAutoresizingMaskIntoConstraints="NO" id="JKa-P9-LsW">
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ImagePlaceholder" translatesAutoresizingMaskIntoConstraints="NO" id="JKa-P9-LsW">
                                                     <rect key="frame" x="0.0" y="0.0" width="150" height="150"/>
                                                 </imageView>
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="✓" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="W0Y-Ok-kBE">
@@ -105,7 +105,7 @@
                                                     <fontDescription key="fontDescription" name="Impact" family="Impact" pointSize="30"/>
                                                     <textInputTraits key="textInputTraits"/>
                                                 </textField>
-                                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="Y5u-gF-zYq">
+                                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="Y5u-gF-zYq">
                                                     <rect key="frame" x="65" y="65" width="20" height="20"/>
                                                 </activityIndicatorView>
                                             </subviews>
@@ -124,6 +124,7 @@
                                         <size key="customSize" width="150" height="150"/>
                                         <connections>
                                             <outlet property="checkmarkOutlet" destination="W0Y-Ok-kBE" id="cff-jG-e9E"/>
+                                            <outlet property="loadingIndicator" destination="Y5u-gF-zYq" id="4tz-tS-ZLN"/>
                                             <outlet property="photoImageView" destination="JKa-P9-LsW" id="toW-SW-log"/>
                                         </connections>
                                     </collectionViewCell>

@@ -11,6 +11,7 @@ import UIKit
 
 class PhotoCollectionViewCell: SelectableCollectionViewCell {
     @IBOutlet weak var photoImageView: UIImageView!
+    @IBOutlet weak var loadingIndicator: UIActivityIndicatorView!
     @IBOutlet weak var checkmarkOutlet: UITextField! {
         didSet {
             checkmark = checkmarkOutlet

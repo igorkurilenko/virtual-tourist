@@ -76,7 +76,7 @@ class MapViewController: BaseUIViewController, MKMapViewDelegate, NSFetchedResul
             
         case .Ended:
             CoreDataStackManager.saveContext()
-            searchPhotosFor(lastPin)
+            searchPhotos(forPin: lastPin)
             
         default:
             return
