@@ -11,7 +11,6 @@ import MapKit
 
 // todo: refactor this service
 class FlickrService {
-    typealias OnError = (NSError) -> Void
     typealias SearchPhotosOnSuccess = NSDictionary -> Void
     
     struct SearchPhotosConfig {
@@ -22,8 +21,8 @@ class FlickrService {
         static let SafeSearch = "1"
         static let DataFormat = "json"
         static let NoJsonCallback = "1"
-        static let BoundingBoxHalfWidth = 0.001
-        static let BoundingBoxHalfHeight = 0.001
+        static let BoundingBoxHalfWidth = 0.0025
+        static let BoundingBoxHalfHeight = 0.0025
         static let LatMin = -90.0
         static let LatMax = 90.0
         static let LonMin = -180.0
@@ -37,17 +36,17 @@ class FlickrService {
         self.urlSession = urlSession
     }
     
-    func searchPhotos(coordinate: CLLocationCoordinate2D, withPage page: Int = 1, withPerPage perPage: Int = 24,
+    func searchPhotos(coordinate: CLLocationCoordinate2D, withPage page: Int = 1, withPerPage perPage: Int = 21,
         onError: OnError, onSuccess: SearchPhotosOnSuccess) {
             let request = createSearchPhotoRequest(coordinate, page: page, perPage: perPage)
             
             urlSession.dataTaskWithRequest(request) {data, response, downloadError in
-                self.ifErrorElse(downloadError, errorHandler: onError){
+                ifErrorElse(downloadError, onError) {
                     var parsingError: NSError? = nil
                     let parsedResult = NSJSONSerialization.JSONObjectWithData(data,
                         options: NSJSONReadingOptions.AllowFragments, error: &parsingError) as! NSDictionary
                     
-                    self.ifErrorElse(parsingError, errorHandler: onError){
+                    ifErrorElse(parsingError, onError) {
                         onSuccess(parsedResult)
                     }
                 }
@@ -71,16 +70,7 @@ class FlickrService {
         httpGet.timeoutInterval = SearchPhotosConfig.RequestTimeoutSeconds
         
         return httpGet
-    }
-    
-    private func ifErrorElse(error: NSError?, errorHandler: OnError, noErrorHandler: () -> Void) {
-        if let error = error {
-            errorHandler(error)
-            
-        } else {
-            noErrorHandler()
-        }
-    }
+    }        
     
     private func createBoundingBoxString(coordinate: CLLocationCoordinate2D) -> String {
         

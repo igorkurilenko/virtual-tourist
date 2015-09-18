@@ -11,24 +11,40 @@ import MapKit
 import CoreData
 import CoreLocation
 
-class MapViewController: BaseUIViewController, MKMapViewDelegate {
+class MapViewController: BaseUIViewController, MKMapViewDelegate, NSFetchedResultsControllerDelegate {
     @IBOutlet weak var mapView: MKMapView!
     private var lastPin:Pin!
     private let mapRegionService = WithCurrentLocationDetectionIfNotExists(
         decoratee: MapRegionArchiverService())
+    private lazy var fetchedPinsController: NSFetchedResultsController = {
+        let fetchRequest = NSFetchRequest(entityName: "Pin")
+        
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "latitude", ascending: false)]
+        
+        let fetchedResultsController = NSFetchedResultsController(
+            fetchRequest: fetchRequest,
+            managedObjectContext: self.sharedDataContext,
+            sectionNameKeyPath: nil,
+            cacheName: nil)
+        
+        fetchedResultsController.delegate = self
+        
+        return fetchedResultsController
+        }()
     
     override func viewDidLoad() {
-        super.viewDidLoad()        
+        super.viewDidLoad()
+        
+        fetchedPinsController.performFetch(nil)
         
         initMapView()
     }
-    
     
     private func initMapView() {
         initGestureRecognizer()
         initMapRegion()
         
-        mapView.addAnnotations(fetchedResultsController.fetchedObjects)
+        mapView.addAnnotations(fetchedPinsController.fetchedObjects)
     }
     
     private func initGestureRecognizer() {

@@ -26,6 +26,8 @@
 		A52609FA1BA9ACC5002CDC22 /* SelectableCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52609F91BA9ACC5002CDC22 /* SelectableCollectionViewCell.swift */; };
 		A52609FC1BA9AD3E002CDC22 /* PhotoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52609FB1BA9AD3E002CDC22 /* PhotoCollectionViewCell.swift */; };
 		A52609FE1BAAC8BC002CDC22 /* BaseUIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52609FD1BAAC8BC002CDC22 /* BaseUIViewController.swift */; };
+		A5260A011BAB098E002CDC22 /* image-placeholder.png in Resources */ = {isa = PBXBuildFile; fileRef = A5260A001BAB098E002CDC22 /* image-placeholder.png */; };
+		A5260A041BAB1102002CDC22 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5260A031BAB1102002CDC22 /* Utils.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,6 +64,8 @@
 		A52609F91BA9ACC5002CDC22 /* SelectableCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectableCollectionViewCell.swift; sourceTree = "<group>"; };
 		A52609FB1BA9AD3E002CDC22 /* PhotoCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoCollectionViewCell.swift; sourceTree = "<group>"; };
 		A52609FD1BAAC8BC002CDC22 /* BaseUIViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseUIViewController.swift; sourceTree = "<group>"; };
+		A5260A001BAB098E002CDC22 /* image-placeholder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "image-placeholder.png"; sourceTree = "<group>"; };
+		A5260A031BAB1102002CDC22 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,6 +113,7 @@
 				A52609F81BA9AC99002CDC22 /* View */,
 				A52609E81BA7EE71002CDC22 /* Controller */,
 				A52609E91BA7EFA9002CDC22 /* Service */,
+				A5260A021BAB10E6002CDC22 /* Misc */,
 				A52609CB1BA1BA0D002CDC22 /* Images.xcassets */,
 				A52609CD1BA1BA0D002CDC22 /* LaunchScreen.xib */,
 				A52609C11BA1BA0D002CDC22 /* Virtual_Tourist.xcdatamodeld */,
@@ -120,6 +125,7 @@
 		A52609BD1BA1BA0D002CDC22 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				A52609FF1BAB0954002CDC22 /* Assests */,
 				A52609BE1BA1BA0D002CDC22 /* Info.plist */,
 			);
 			name = "Supporting Files";
@@ -189,6 +195,22 @@
 				A52609FB1BA9AD3E002CDC22 /* PhotoCollectionViewCell.swift */,
 			);
 			name = View;
+			sourceTree = "<group>";
+		};
+		A52609FF1BAB0954002CDC22 /* Assests */ = {
+			isa = PBXGroup;
+			children = (
+				A5260A001BAB098E002CDC22 /* image-placeholder.png */,
+			);
+			name = Assests;
+			sourceTree = "<group>";
+		};
+		A5260A021BAB10E6002CDC22 /* Misc */ = {
+			isa = PBXGroup;
+			children = (
+				A5260A031BAB1102002CDC22 /* Utils.swift */,
+			);
+			name = Misc;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -274,6 +296,7 @@
 				A52609CA1BA1BA0D002CDC22 /* Main.storyboard in Resources */,
 				A52609CF1BA1BA0D002CDC22 /* LaunchScreen.xib in Resources */,
 				A52609CC1BA1BA0D002CDC22 /* Images.xcassets in Resources */,
+				A5260A011BAB098E002CDC22 /* image-placeholder.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -298,6 +321,7 @@
 				A52609F31BA94C92002CDC22 /* FlickrService.swift in Sources */,
 				A52609EB1BA7F490002CDC22 /* CurrentLocationService.swift in Sources */,
 				A52609F71BA971E9002CDC22 /* HttpRequest.swift in Sources */,
+				A5260A041BAB1102002CDC22 /* Utils.swift in Sources */,
 				A52609F01BA801FB002CDC22 /* Photo.swift in Sources */,
 				A52609EE1BA801EF002CDC22 /* Pin.swift in Sources */,
 				A52609C01BA1BA0D002CDC22 /* AppDelegate.swift in Sources */,

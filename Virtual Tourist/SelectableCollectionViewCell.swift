@@ -23,26 +23,11 @@ class SelectableCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    
     override var selected: Bool {
         didSet {
-            if selected {
-                renderSelected()
-            } else {
-                renderDeselected()
-            }
+            checkmark.layer.backgroundColor = selected ? checkmark.tintColor.CGColor:
+                UIColor.clearColor().CGColor
+            checkmark.text = selected ? checkmarkTextSign: ""
         }
     }
-    
-    private func renderSelected() {
-        checkmark.layer.backgroundColor = checkmark.tintColor.CGColor
-        checkmark.text = checkmarkTextSign
-        
-    }
-    
-    private func renderDeselected() {
-        checkmark.layer.backgroundColor = UIColor.clearColor().CGColor
-        checkmark.text = ""
-    }
-    
 }

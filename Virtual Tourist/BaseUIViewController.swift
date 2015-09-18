@@ -11,28 +11,12 @@ import UIKit
 import CoreData
 import MapKit
 
-class BaseUIViewController: UIViewController, NSFetchedResultsControllerDelegate {
-    internal let flickrService = FlickrService(urlSession: NSURLSession.sharedSession())    
+class BaseUIViewController: UIViewController {
+    internal let flickrService = FlickrService(urlSession: NSURLSession.sharedSession())
     internal lazy var sharedDataContext: NSManagedObjectContext = {
         
         return CoreDataStackManager.instance().managedObjectContext
         }()
-    
-    internal lazy var fetchedResultsController: NSFetchedResultsController = {
-        let fetchRequest = NSFetchRequest(entityName: "Pin")
-        
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "latitude", ascending: false)]
-        
-        let fetchedResultsController = NSFetchedResultsController(
-            fetchRequest: fetchRequest,
-            managedObjectContext: self.sharedDataContext,
-            sectionNameKeyPath: nil,
-            cacheName: nil)
-        
-        fetchedResultsController.delegate = self
-        
-        return fetchedResultsController
-        } ()
     
     internal func searchPhotosFor(pin: Pin) {
         flickrService.searchPhotos(pin.coordinate, onError: printError) { searchResult in
@@ -44,12 +28,6 @@ class BaseUIViewController: UIViewController, NSFetchedResultsControllerDelegate
                 CoreDataStackManager.saveContext()
             }
         }
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        fetchedResultsController.performFetch(nil)
     }
     
     private func forEachPhotoDicitonaryInSearchResult(searchResult: NSDictionary,

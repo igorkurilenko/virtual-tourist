@@ -10,21 +10,61 @@ import UIKit
 import MapKit
 import CoreData
 
-class CollectionViewController: BaseUIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
-    
+class CollectionViewController: BaseUIViewController, UICollectionViewDelegate,
+UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
+    var pin:Pin!
+    private var editCollectionState:(() -> Void)!
+    private var updateRemoveSelectedPhotosButtonVisibility: (() -> Void)!
+    private var checkmarksHidden = true
+    @IBOutlet var editCollectionButton: UIBarButtonItem!
+    @IBOutlet var cancelEditCollectionButton: UIBarButtonItem!
+    @IBOutlet var removeSelectedPhotosButton: UIBarButtonItem!
+    @IBOutlet weak var newCollectionButton: UIBarButtonItem!
+    @IBOutlet weak var editCollectionOnToolbar: UIToolbar!
+    @IBOutlet weak var editCollectionOffToolbar: UIToolbar!
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var mapView: MKMapView!
-    var pin:Pin!
+    
+    private lazy var fetchedPhotosController: NSFetchedResultsController = {
+        let fetchRequest = NSFetchRequest(entityName: "Photo")
+        
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "url", ascending: false)]
+        fetchRequest.predicate = NSPredicate(format: "pin = %@", self.pin)
+        
+        let fetchedResultsController = NSFetchedResultsController(
+            fetchRequest: fetchRequest,
+            managedObjectContext: self.sharedDataContext,
+            sectionNameKeyPath: nil,
+            cacheName: nil)
+        
+        fetchedResultsController.delegate = self
+        
+        return fetchedResultsController
+        }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        fetchedPhotosController.performFetch(nil)
+        
+        initUI()
+    }
+    
+    private func initUI() {
+        editCollectionOff()
+        adjustCellSize()
+        collectionView.allowsMultipleSelection = true
+    }
+    
+    private func adjustCellSize() {
+        let flowLayout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
+        let size = (view.frame.size.width / 3.0) - 1
+        
+        flowLayout.itemSize = CGSizeMake(size, size)
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        
-        println(pin.photos.count)
         
         initMapView()
     }
@@ -36,7 +76,7 @@ class CollectionViewController: BaseUIViewController, UICollectionViewDelegate, 
     }
     
     private func createCoordinateRegion() -> MKCoordinateRegion {
-        let latitude = pin.latitude as! Double + 0.003
+        let latitude = pin.latitude as! Double + 0.0025
         let longitude = pin.longitude as! Double
         let span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
         let center = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
@@ -44,22 +84,77 @@ class CollectionViewController: BaseUIViewController, UICollectionViewDelegate, 
         return MKCoordinateRegion(center: center, span: span)
     }
     
+    @IBAction func onEditCollectionTouched(sender: AnyObject) {
+        editCollectionState()
+    }
+    
+    @IBAction func onNewCollectionButtonTouched(sender: AnyObject) {
+    }
+    
+    @IBAction func onRemoveSelectedPhotosTouched(sender: AnyObject) {
+    }
+    
+    private func editCollectionOn() {
+        navigationItem.rightBarButtonItem = cancelEditCollectionButton
+        editCollectionOffToolbar.hidden = true
+        editCollectionOnToolbar.hidden = false
+        editCollectionState = editCollectionOff
+        checkmarksHidden = false
+        collectionView.reloadData()
+        updateRemoveSelectedPhotosButtonVisibility = {
+            self.removeSelectedPhotosButton.enabled =
+                self.collectionView.indexPathsForSelectedItems().count > 0
+        }
+        updateRemoveSelectedPhotosButtonVisibility()
+    }
+    
+    private func editCollectionOff() {
+        navigationItem.rightBarButtonItem = editCollectionButton
+        editCollectionOnToolbar.hidden = true
+        editCollectionOffToolbar.hidden = false
+        editCollectionState = editCollectionOn
+        checkmarksHidden = true
+        collectionView.reloadData()
+        updateRemoveSelectedPhotosButtonVisibility = {}
+    }
+    
+    // MARK: - Colleciton View delegate
+    
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        updateRemoveSelectedPhotosButtonVisibility()
+    }
+    
+    func collectionView(collectionView: UICollectionView, didDeselectItemAtIndexPath indexPath: NSIndexPath) {
+        updateRemoveSelectedPhotosButtonVisibility()
+    }
+    
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 1
+        let sectionInfo = self.fetchedPhotosController.sections![section] as!
+        NSFetchedResultsSectionInfo
+        
+        return sectionInfo.numberOfObjects
     }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("PhotoCollectionViewCell", forIndexPath: indexPath)
-            as! UICollectionViewCell
+            as! PhotoCollectionViewCell
+        
+        cell.checkmark.hidden = checkmarksHidden
         
         return cell
     }
     
     // MARK: - Fetched results controller delegate
     
-    func controllerDidChangeContent(controller: NSFetchedResultsController) {
-        println(pin.photos.count)
+    func controller(controller: NSFetchedResultsController, didChangeSection sectionInfo: NSFetchedResultsSectionInfo, atIndex sectionIndex: Int, forChangeType type: NSFetchedResultsChangeType) {
+        
     }
     
+    func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
+        
+    }
+    
+    func controllerDidChangeContent(controller: NSFetchedResultsController) {
+        
+    }
 }
-

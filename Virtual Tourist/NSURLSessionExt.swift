@@ -15,9 +15,7 @@ extension NSURLSession {
     
     func downloadImage(url: NSURL, onError: OnError, onSuccess: OnSuccess) {
         dataTaskWithURL(url) { data, response, error in
-            if error != nil {
-                onError(error)
-            } else {
+            ifErrorElse(error, onError){
                 onSuccess(UIImage(data: data!))
             }
             }.resume()

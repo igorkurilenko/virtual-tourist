@@ -4,6 +4,11 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <mutableArray key="Impact.ttf">
+            <string>Impact</string>
+        </mutableArray>
+    </customFonts>
     <scenes>
         <!--Virtual Tourist-->
         <scene sceneID="cUi-kZ-frf">
@@ -77,23 +82,56 @@
                                 </constraints>
                             </mapView>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="OcN-LL-8sg">
-                                <rect key="frame" x="0.0" y="150" width="600" height="450"/>
+                                <rect key="frame" x="0.0" y="150" width="600" height="406"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="LHl-0P-YdB">
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="1" minimumInteritemSpacing="1" id="Q6d-bp-szx">
                                     <size key="itemSize" width="50" height="50"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="PhotoCollectionViewCell" id="QMZ-OF-ikj">
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="PhotoCollectionViewCell" id="QMZ-OF-ikj" customClass="PhotoCollectionViewCell" customModule="Virtual_Tourist" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                            <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="150" height="150"/>
                                             <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ImagePlaceholder" translatesAutoresizingMaskIntoConstraints="NO" id="JKa-P9-LsW">
+                                                    <rect key="frame" x="0.0" y="0.0" width="150" height="150"/>
+                                                </imageView>
+                                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="Y5u-gF-zYq">
+                                                    <rect key="frame" x="65" y="65" width="20" height="20"/>
+                                                </activityIndicatorView>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="✓" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="W0Y-Ok-kBE">
+                                                    <rect key="frame" x="112" y="112" width="30" height="30"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="30" id="0pG-6z-lOd"/>
+                                                        <constraint firstAttribute="width" constant="30" id="Hzw-uu-7bL"/>
+                                                    </constraints>
+                                                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <fontDescription key="fontDescription" name="Impact" family="Impact" pointSize="30"/>
+                                                    <textInputTraits key="textInputTraits"/>
+                                                </textField>
+                                            </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
+                                        <constraints>
+                                            <constraint firstAttribute="bottomMargin" secondItem="JKa-P9-LsW" secondAttribute="bottom" constant="-8" id="AtT-CW-sWb"/>
+                                            <constraint firstItem="JKa-P9-LsW" firstAttribute="top" secondItem="QMZ-OF-ikj" secondAttribute="topMargin" constant="-8" id="SPP-Dp-b5v"/>
+                                            <constraint firstAttribute="centerY" secondItem="Y5u-gF-zYq" secondAttribute="centerY" id="jjX-en-a1o"/>
+                                            <constraint firstItem="JKa-P9-LsW" firstAttribute="leading" secondItem="QMZ-OF-ikj" secondAttribute="leadingMargin" constant="-8" id="npO-yy-Vwt"/>
+                                            <constraint firstAttribute="trailingMargin" secondItem="JKa-P9-LsW" secondAttribute="trailing" constant="-8" id="oyi-I3-DLZ"/>
+                                            <constraint firstItem="W0Y-Ok-kBE" firstAttribute="trailing" secondItem="QMZ-OF-ikj" secondAttribute="trailingMargin" id="uhs-WR-bNg"/>
+                                            <constraint firstItem="W0Y-Ok-kBE" firstAttribute="bottom" secondItem="QMZ-OF-ikj" secondAttribute="bottomMargin" id="wi2-c0-xS3"/>
+                                            <constraint firstAttribute="centerX" secondItem="Y5u-gF-zYq" secondAttribute="centerX" id="ysN-sS-jVn"/>
+                                        </constraints>
+                                        <size key="customSize" width="150" height="150"/>
+                                        <connections>
+                                            <outlet property="checkmarkOutlet" destination="W0Y-Ok-kBE" id="cff-jG-e9E"/>
+                                            <outlet property="photoImageView" destination="JKa-P9-LsW" id="toW-SW-log"/>
+                                        </connections>
                                     </collectionViewCell>
                                 </cells>
                                 <connections>
@@ -101,26 +139,75 @@
                                     <outlet property="delegate" destination="YEy-Ry-uId" id="qO1-ia-yKA"/>
                                 </connections>
                             </collectionView>
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UGg-06-1S3" userLabel="Edit Collection Off Toolbar">
+                                <rect key="frame" x="0.0" y="556" width="600" height="44"/>
+                                <items>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="EfU-bD-hX4"/>
+                                    <barButtonItem enabled="NO" title="New Collection" id="WaB-EO-y0f">
+                                        <connections>
+                                            <action selector="onNewCollectionButtonTouched:" destination="YEy-Ry-uId" id="vcE-pW-H5X"/>
+                                        </connections>
+                                    </barButtonItem>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="9uK-sw-UVv"/>
+                                </items>
+                            </toolbar>
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sls-Q0-EM6" userLabel="Edit Collection On Toolbar">
+                                <rect key="frame" x="0.0" y="556" width="600" height="44"/>
+                                <items>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="Wxq-qK-LzJ"/>
+                                    <barButtonItem enabled="NO" title="Remove Selected Pictures" id="R0X-yA-1qs">
+                                        <connections>
+                                            <action selector="onRemoveSelectedPhotosTouched:" destination="YEy-Ry-uId" id="2Oe-d2-NhR"/>
+                                        </connections>
+                                    </barButtonItem>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="8pJ-Kr-bnb"/>
+                                </items>
+                            </toolbar>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="lXQ-dr-85h" firstAttribute="leading" secondItem="M3x-qf-sq9" secondAttribute="leadingMargin" constant="-16" id="6g9-qy-jKQ"/>
+                            <constraint firstItem="Z0P-NX-Tgb" firstAttribute="top" secondItem="UGg-06-1S3" secondAttribute="bottom" id="7DZ-YJ-HGk"/>
                             <constraint firstItem="OcN-LL-8sg" firstAttribute="top" secondItem="lXQ-dr-85h" secondAttribute="bottom" id="CKq-dr-DQa"/>
+                            <constraint firstItem="sls-Q0-EM6" firstAttribute="leading" secondItem="M3x-qf-sq9" secondAttribute="leadingMargin" constant="-16" id="DsR-Ll-Lli"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="sls-Q0-EM6" secondAttribute="trailing" constant="-16" id="HvE-u7-75S"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="UGg-06-1S3" secondAttribute="trailing" constant="-16" id="O1Z-DN-0Ja"/>
                             <constraint firstAttribute="trailingMargin" secondItem="OcN-LL-8sg" secondAttribute="trailing" constant="-16" id="Oau-jh-HMv"/>
+                            <constraint firstItem="UGg-06-1S3" firstAttribute="leading" secondItem="M3x-qf-sq9" secondAttribute="leadingMargin" constant="-16" id="QDT-kJ-uJJ"/>
                             <constraint firstItem="OcN-LL-8sg" firstAttribute="leading" secondItem="M3x-qf-sq9" secondAttribute="leadingMargin" constant="-16" id="bac-pz-LeD"/>
+                            <constraint firstItem="UGg-06-1S3" firstAttribute="top" secondItem="OcN-LL-8sg" secondAttribute="bottom" id="dO7-FV-FCY"/>
                             <constraint firstItem="lXQ-dr-85h" firstAttribute="top" secondItem="M3x-qf-sq9" secondAttribute="topMargin" id="fnL-la-3bK"/>
-                            <constraint firstItem="Z0P-NX-Tgb" firstAttribute="top" secondItem="OcN-LL-8sg" secondAttribute="bottom" id="pxB-nr-6Es"/>
+                            <constraint firstItem="Z0P-NX-Tgb" firstAttribute="top" secondItem="sls-Q0-EM6" secondAttribute="bottom" id="ko9-a3-isU"/>
                             <constraint firstAttribute="trailingMargin" secondItem="lXQ-dr-85h" secondAttribute="trailing" constant="-16" id="y3s-hd-6u8"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="cancelEditCollectionButton" destination="O1O-Hn-YiK" id="a23-AW-izO"/>
                         <outlet property="collectionView" destination="OcN-LL-8sg" id="tun-KU-Xrl"/>
+                        <outlet property="editCollectionButton" destination="xTO-hb-hjw" id="fxX-ZI-tsO"/>
+                        <outlet property="editCollectionOffToolbar" destination="UGg-06-1S3" id="4Qr-Gm-3dw"/>
+                        <outlet property="editCollectionOnToolbar" destination="sls-Q0-EM6" id="89h-DQ-eVn"/>
                         <outlet property="mapView" destination="lXQ-dr-85h" id="DTy-G3-F9N"/>
+                        <outlet property="newCollectionButton" destination="WaB-EO-y0f" id="WaM-lB-0Ep"/>
+                        <outlet property="removeSelectedPhotosButton" destination="R0X-yA-1qs" id="lTn-Me-tmO"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Vfi-G1-ZRk" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <barButtonItem title="Edit" id="xTO-hb-hjw">
+                    <connections>
+                        <action selector="onEditCollectionTouched:" destination="YEy-Ry-uId" id="7b3-97-xXL"/>
+                    </connections>
+                </barButtonItem>
+                <barButtonItem title="Cancel" id="O1O-Hn-YiK">
+                    <connections>
+                        <action selector="onEditCollectionTouched:" destination="YEy-Ry-uId" id="UjJ-IR-Ztj"/>
+                    </connections>
+                </barButtonItem>
             </objects>
             <point key="canvasLocation" x="1251" y="64"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="ImagePlaceholder" width="75" height="75"/>
+    </resources>
 </document>

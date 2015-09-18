@@ -25,10 +25,6 @@ class HttpRequest:NSMutableURLRequest {
         setValue(value, forHTTPHeaderField: name)
     }
     
-    func setQueryParams(queryParams: [String:AnyObject]) {
-        let queryString = HttpRequest.buildQueryString(queryParams)
-    }
-    
     static func createGet(url: String) -> HttpGet? {
         return HttpGet(url: url)
     }
