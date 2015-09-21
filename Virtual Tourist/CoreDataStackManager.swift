@@ -12,14 +12,6 @@ import CoreData
 let SQLITE_FILE_NAME = "Virtual_Tourist.sqlite"
 
 class CoreDataStackManager {
-    class func instance() -> CoreDataStackManager {
-        struct Static {
-            static let instance = CoreDataStackManager()
-        }
-        
-        return Static.instance
-    }
-    
     lazy var appDocumentsDirectory:NSURL = {
         let fileManager = NSFileManager.defaultManager(),
         urls = fileManager.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)
@@ -59,28 +51,8 @@ class CoreDataStackManager {
     lazy var managedObjectContext:NSManagedObjectContext = {
         let managedObjectContext = NSManagedObjectContext()
         managedObjectContext.persistentStoreCoordinator = self.persistentStoreCoordinator
+        managedObjectContext.retainsRegisteredObjects = true
         
         return managedObjectContext
-    }()
-    
-    class func saveContext() {
-        CoreDataStackManager.instance().saveContext()
-    }
-    
-    func saveContext() {
-        if !self.managedObjectContext.hasChanges {
-            return
-        }
-        
-        var error: NSError? = nil
-        do {
-            try self.managedObjectContext.save()
-            return
-        } catch let error1 as NSError {
-            error = error1
-        }
-        
-        print("Error saving context: \(error?.localizedDescription)\n\(error?.userInfo)", terminator: "")
-    }
-    
+    }()        
 }

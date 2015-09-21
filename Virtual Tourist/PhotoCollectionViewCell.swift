@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-class PhotoCollectionViewCell: SelectableCollectionViewCell {
+class PhotoAlbumCell: SelectableCollectionViewCell {
     @IBOutlet weak var photoImageView: UIImageView!
     @IBOutlet weak var loadingIndicator: UIActivityIndicatorView!
     @IBOutlet weak var checkmarkOutlet: UITextField! {

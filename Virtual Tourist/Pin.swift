@@ -16,6 +16,7 @@ class Pin: NSManagedObject{
     @NSManaged var latitude:NSNumber
     @NSManaged var longitude:NSNumber
     @NSManaged var photos: [Photo]
+    @NSManaged var photosAlbumLoadingState: PhotosAlbumLoadingState
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
@@ -28,6 +29,6 @@ class Pin: NSManagedObject{
         
         latitude = coordinate.latitude
         longitude = coordinate.longitude
-        
+        photosAlbumLoadingState = PhotosAlbumLoadingState(context: context)
     }
 }

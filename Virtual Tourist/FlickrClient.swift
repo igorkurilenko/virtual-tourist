@@ -9,9 +9,17 @@
 import Foundation
 import MapKit
 
+protocol FlickrClient {
+    
+    func searchPhotos(
+        coordinate: CLLocationCoordinate2D,
+        page: Int,
+        onError: OnError,
+        onSuccess: NSDictionary -> Void) -> NSURLSessionDataTask
+}
+
 // todo: refactor this service
-class FlickrService {
-    typealias SearchPhotosOnSuccess = NSDictionary -> Void
+class DefaultFlickrClient: FlickrClient {
     
     struct SearchPhotosConfig {
         static let BaseUrl = "https://api.flickr.com/services/rest/"
@@ -28,6 +36,7 @@ class FlickrService {
         static let LonMin = -180.0
         static let LonMax = 180.0
         static let RequestTimeoutSeconds:NSTimeInterval = 60
+        static let PerPage = 21
     }
     
     var urlSession:NSURLSession
@@ -36,11 +45,11 @@ class FlickrService {
         self.urlSession = urlSession
     }
     
-    func searchPhotos(coordinate: CLLocationCoordinate2D, withPage page: Int = 1, withPerPage perPage: Int = 21,
-        onError: OnError, onSuccess: SearchPhotosOnSuccess) {
-            let request = createSearchPhotoRequest(coordinate, page: page, perPage: perPage)
+    func searchPhotos(coordinate: CLLocationCoordinate2D, page: Int,
+        onError: OnError, onSuccess: NSDictionary -> Void) -> NSURLSessionDataTask {
+            let request = createSearchPhotoRequest(coordinate, page: page)
             
-            urlSession.dataTaskWithRequest(request) {data, response, downloadError in
+            let task = urlSession.dataTaskWithRequest(request) {data, response, downloadError in
                 ifErrorElse(downloadError, errorHandler: onError) {
                     do{
                         let parsedResult = (try NSJSONSerialization.JSONObjectWithData(data!,
@@ -52,10 +61,14 @@ class FlickrService {
                         onError(error as NSError)
                     }
                 }
-            }.resume()
+            }
+            
+            task.resume()
+            
+            return task
     }
     
-    private func createSearchPhotoRequest(coordinate: CLLocationCoordinate2D, page: Int, perPage: Int) -> NSURLRequest {
+    private func createSearchPhotoRequest(coordinate: CLLocationCoordinate2D, page: Int) -> NSURLRequest {
         let queryParams = [
             "method": SearchPhotosConfig.MethodName,
             "api_key": SearchPhotosConfig.ApiKey,
@@ -65,7 +78,7 @@ class FlickrService {
             "format": SearchPhotosConfig.DataFormat,
             "nojsoncallback": SearchPhotosConfig.NoJsonCallback,
             "page": "\(page)",
-            "per_page": "\(perPage)"
+            "per_page": "\(SearchPhotosConfig.PerPage)"
         ]
         
         let httpGet = HttpRequest.createGet(SearchPhotosConfig.BaseUrl, queryParams: queryParams)!

@@ -63,10 +63,10 @@
             </objects>
             <point key="canvasLocation" x="552" y="64"/>
         </scene>
-        <!--Collection View Controller-->
+        <!--Photo Album View Controller-->
         <scene sceneID="WJq-NH-Ygv">
             <objects>
-                <viewController storyboardIdentifier="CollectionViewController" automaticallyAdjustsScrollViewInsets="NO" id="YEy-Ry-uId" customClass="CollectionViewController" customModule="Virtual_Tourist" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CollectionViewController" automaticallyAdjustsScrollViewInsets="NO" id="YEy-Ry-uId" customClass="PhotoAlbumViewController" customModule="Virtual_Tourist" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="HoY-rQ-t1f"/>
                         <viewControllerLayoutGuide type="bottom" id="Z0P-NX-Tgb"/>
@@ -85,7 +85,7 @@
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="PhotoCollectionViewCell" id="QMZ-OF-ikj" customClass="PhotoCollectionViewCell" customModule="Virtual_Tourist" customModuleProvider="target">
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="PhotoAlbumCell" id="QMZ-OF-ikj" customClass="PhotoAlbumCell" customModule="Virtual_Tourist" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="150" height="150"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
@@ -158,6 +158,12 @@
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="8pJ-Kr-bnb"/>
                                 </items>
                             </toolbar>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="This pin has no images." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ghL-bp-zqs">
+                                <rect key="frame" x="210.5" y="290.5" width="179.5" height="20.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" zoomEnabled="NO" scrollEnabled="NO" rotateEnabled="NO" pitchEnabled="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lXQ-dr-85h">
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="150"/>
                                 <constraints>
@@ -169,6 +175,8 @@
                         <constraints>
                             <constraint firstItem="UGg-06-1S3" firstAttribute="leading" secondItem="M3x-qf-sq9" secondAttribute="leading" id="1X0-YG-1ib"/>
                             <constraint firstAttribute="trailing" secondItem="UGg-06-1S3" secondAttribute="trailing" id="5mJ-Vg-1Q1"/>
+                            <constraint firstItem="ghL-bp-zqs" firstAttribute="centerY" secondItem="M3x-qf-sq9" secondAttribute="centerY" id="Bql-DI-t5U"/>
+                            <constraint firstItem="ghL-bp-zqs" firstAttribute="centerX" secondItem="M3x-qf-sq9" secondAttribute="centerX" id="CIo-0E-EXd"/>
                             <constraint firstAttribute="trailing" secondItem="lXQ-dr-85h" secondAttribute="trailing" id="CXk-2g-d0Q"/>
                             <constraint firstItem="lXQ-dr-85h" firstAttribute="top" secondItem="M3x-qf-sq9" secondAttribute="top" id="HBy-rZ-QQr"/>
                             <constraint firstItem="OcN-LL-8sg" firstAttribute="leading" secondItem="M3x-qf-sq9" secondAttribute="leading" id="JRe-Yr-YPD"/>
@@ -190,6 +198,7 @@
                         <outlet property="editCollectionOnToolbar" destination="sls-Q0-EM6" id="89h-DQ-eVn"/>
                         <outlet property="mapView" destination="lXQ-dr-85h" id="DTy-G3-F9N"/>
                         <outlet property="newCollectionButton" destination="WaB-EO-y0f" id="WaM-lB-0Ep"/>
+                        <outlet property="noImagesLabel" destination="ghL-bp-zqs" id="Kvi-6R-qmi"/>
                         <outlet property="removeSelectedPhotosButton" destination="R0X-yA-1qs" id="lTn-Me-tmO"/>
                     </connections>
                 </viewController>

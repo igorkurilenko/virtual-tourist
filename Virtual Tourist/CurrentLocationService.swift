@@ -34,7 +34,6 @@ class CurrentLocationService: NSObject, CLLocationManagerDelegate {
     
     func get(callback: (currentCoordinate: CLLocationCoordinate2D?)->Void) {
         if(!CLLocationManager.locationServicesEnabled()) {
-            print("location services not enabled")
             callback(currentCoordinate: nil)
         }
         

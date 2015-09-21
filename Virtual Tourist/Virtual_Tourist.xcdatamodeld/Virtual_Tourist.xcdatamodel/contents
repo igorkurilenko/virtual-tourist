@@ -7,13 +7,21 @@
         <attribute name="url" attributeType="String" syncable="YES"/>
         <relationship name="pin" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Pin" inverseName="photos" inverseEntity="Pin" syncable="YES"/>
     </entity>
+    <entity name="PhotosAlbumLoadingState" representedClassName="PhotosAlbumLoadingState" syncable="YES">
+        <attribute name="inProgress" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
+        <attribute name="lastLoadedPage" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="totalPages" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <relationship name="pin" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Pin" inverseName="photosAlbumLoadingState" inverseEntity="Pin" syncable="YES"/>
+    </entity>
     <entity name="Pin" representedClassName="Pin" syncable="YES">
         <attribute name="latitude" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="longitude" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <relationship name="photos" toMany="YES" deletionRule="Cascade" destinationEntity="Photo" inverseName="pin" inverseEntity="Photo" syncable="YES"/>
+        <relationship name="photosAlbumLoadingState" maxCount="1" deletionRule="Cascade" destinationEntity="PhotosAlbumLoadingState" inverseName="pin" inverseEntity="PhotosAlbumLoadingState" syncable="YES"/>
     </entity>
     <elements>
         <element name="Photo" positionX="-45" positionY="27" width="128" height="120"/>
-        <element name="Pin" positionX="-63" positionY="-18" width="128" height="90"/>
+        <element name="PhotosAlbumLoadingState" positionX="-54" positionY="54" width="128" height="105"/>
+        <element name="Pin" positionX="-63" positionY="-18" width="128" height="105"/>
     </elements>
 </model>

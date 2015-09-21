@@ -11,11 +11,17 @@ import MapKit
 import CoreData
 import CoreLocation
 
-class MapViewController: BaseUIViewController, MKMapViewDelegate, NSFetchedResultsControllerDelegate {
+class MapViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsControllerDelegate {
     @IBOutlet weak var mapView: MKMapView!
     private var lastPin:Pin!
     private let mapRegionService = WithCurrentLocationDetectionIfNotExists(
         decoratee: MapRegionArchiverService())
+    private lazy var sharedDataContext: NSManagedObjectContext = {
+        return Core.instance().coreDataStackManager.managedObjectContext
+        }()
+    private lazy var remoteDataProvider: RemoteDataProvider = {
+        return Core.instance().remoteDataProvider
+        }()
     private lazy var fetchedPinsController: NSFetchedResultsController = {
         let fetchRequest = NSFetchRequest(entityName: "Pin")
         
@@ -51,7 +57,9 @@ class MapViewController: BaseUIViewController, MKMapViewDelegate, NSFetchedResul
     }
     
     private func initGestureRecognizer() {
-        let longPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: "onLongPress:")
+        let longPressGestureRecognizer =
+        UILongPressGestureRecognizer(target: self, action: "onLongPress:")
+        
         longPressGestureRecognizer.minimumPressDuration = 0.5
         mapView.addGestureRecognizer(longPressGestureRecognizer)
     }
@@ -59,7 +67,9 @@ class MapViewController: BaseUIViewController, MKMapViewDelegate, NSFetchedResul
     private func initMapRegion() {
         mapRegionService.getMapRegion { mapRegion in
             if let mapRegion = mapRegion {
-                self.mapView.setRegion(mapRegion, animated: true)
+                dispatch_async(dispatch_get_main_queue()) {
+                    self.mapView.setRegion(mapRegion, animated: true)
+                }
             }
         }
     }
@@ -75,8 +85,8 @@ class MapViewController: BaseUIViewController, MKMapViewDelegate, NSFetchedResul
             lastPin.coordinate = coordinate
             
         case .Ended:
-            CoreDataStackManager.saveContext()
-            searchPhotos(forPin: lastPin)
+            saveCoreDataContext(sharedDataContext)
+            remoteDataProvider.loadPhotos(forPin: lastPin, context: sharedDataContext)
             
         default:
             return
@@ -84,9 +94,9 @@ class MapViewController: BaseUIViewController, MKMapViewDelegate, NSFetchedResul
     }
     
     private func getGestureCoordinate(gestureRecognizer: UIGestureRecognizer) -> CLLocationCoordinate2D {
-        let pressPoint = gestureRecognizer.locationInView(mapView)
-        
-        return mapView.convertPoint(pressPoint, toCoordinateFromView: mapView)
+            let pressPoint = gestureRecognizer.locationInView(mapView)
+            
+            return mapView.convertPoint(pressPoint, toCoordinateFromView: mapView)
     }
     
     private func addPin(coordinate: CLLocationCoordinate2D) {
@@ -101,19 +111,20 @@ class MapViewController: BaseUIViewController, MKMapViewDelegate, NSFetchedResul
         mapRegionService.persistMapRegion(mapView.region)
     }
     
-    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
-        var result:MKAnnotationView!
-        let reuseId = "com.virtual-tourist.pin"
-        
-        if let annotationView = getReusableAnnotationView(reuseId) {
-            annotationView.annotation = annotation
-            result = annotationView
+    func mapView(mapView: MKMapView,
+        viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+            var result:MKAnnotationView!
+            let reuseId = "com.virtual-tourist.pin"
             
-        } else {
-            result = createAnnotationView(annotation, reuseId: reuseId)
-        }
-        
-        return result
+            if let annotationView = getReusableAnnotationView(reuseId) {
+                annotationView.annotation = annotation
+                result = annotationView
+                
+            } else {
+                result = createAnnotationView(annotation, reuseId: reuseId)
+            }
+            
+            return result
     }
     
     private func getReusableAnnotationView(reuseId: String) -> MKPinAnnotationView? {
@@ -130,7 +141,7 @@ class MapViewController: BaseUIViewController, MKMapViewDelegate, NSFetchedResul
     func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
         let colletionViewController =
         storyboard!.instantiateViewControllerWithIdentifier("CollectionViewController")
-            as! CollectionViewController
+            as! PhotoAlbumViewController
         
         colletionViewController.pin = view.annotation as! Pin
         
@@ -146,7 +157,9 @@ extension Pin: MKAnnotation {
     
     var coordinate: CLLocationCoordinate2D {
         get {
-            return CLLocationCoordinate2D(latitude: self.latitude as Double, longitude: self.longitude as Double)
+            return CLLocationCoordinate2D(
+                latitude: self.latitude as Double,
+                longitude: self.longitude as Double)
         }
         
         set {

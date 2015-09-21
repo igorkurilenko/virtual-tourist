@@ -8,13 +8,14 @@
 
 import UIKit
 import CoreData
+import MapKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
-
+    lazy var sharedDataContext: NSManagedObjectContext = { return Core.instance().coreDataStackManager.managedObjectContext }()
+    
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         return true
     }
@@ -38,11 +39,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationWillTerminate(application: UIApplication) {
-        coreDataStackManager.saveContext()
-    }
-    
-    lazy var coreDataStackManager:CoreDataStackManager = {
-        return CoreDataStackManager.instance()
-    }()
+        saveCoreDataContext(sharedDataContext)
+    }        
 }
 

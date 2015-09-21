@@ -31,6 +31,15 @@ class Photo: NSManagedObject {
         self.url = url
         self.title = title
     }
+    
+    override func prepareForDeletion() {
+        if let filePath = filePath {
+            do{
+                try NSFileManager.defaultManager().removeItemAtPath(filePath)
+            } catch _ {
+            }
+        }
+    }
 }
 
 extension Photo {
