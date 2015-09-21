@@ -123,16 +123,26 @@ UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
     }
     
     @IBAction func onNewCollectionButtonTouched(sender: AnyObject) {
+        for photo in fetchedPhotosController.fetchedObjects as! [Photo] {
+            remoteDataProvider.cancelImageDownloading(forPin: pin, forPhoto: photo)
+            sharedDataContext.deleteObject(photo)
+        }
+        
+        saveCoreDataContext(sharedDataContext)
+        
+        remoteDataProvider.loadPhotos(forPin: pin, context: sharedDataContext)
+        collectionView.reloadData()
     }
     
     @IBAction func onRemoveSelectedPhotosTouched(sender: AnyObject) {
         for indexPath in collectionView.indexPathsForSelectedItems()! {
             let photo = fetchedPhotosController.objectAtIndexPath(indexPath) as! Photo
-            
-            removePhoto(photo)
-            
-            saveCoreDataContext(self.sharedDataContext)
+            remoteDataProvider.cancelImageDownloading(forPin: pin, forPhoto: photo)
+            sharedDataContext.deleteObject(photo)
         }
+        
+        saveCoreDataContext(self.sharedDataContext)
+        collectionView.reloadData()
     }
     
     private func onPhotosLoadingStateChanged() {
@@ -326,11 +336,5 @@ extension PhotoAlbumViewController {
         let center = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
         
         return MKCoordinateRegion(center: center, span: span)
-    }
-    
-    private func removePhoto(photo: Photo) {
-        remoteDataProvider.cancelImageDownloading(forPin: pin, forPhoto: photo)
-        
-        sharedDataContext.deleteObject(photo)
     }
 }

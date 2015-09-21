@@ -18,7 +18,7 @@ protocol RemoteDataProvider {
     func loadPhotos(forPin pin: Pin, context: NSManagedObjectContext)
     
     func cancelLoading(forPin pin: Pin)
-
+    
     func cancelImageDownloading(forPin pin: Pin, forPhoto photo: Photo)
     
     func createLoadingContext(forPin pin: Pin) -> LoadingContext
@@ -70,6 +70,7 @@ class RandomFlickrLoadingContext: LoadingContext {
     private var searchPhotosTask: NSURLSessionDataTask?
     private var imageDownloadingTasks = [String: NSURLSessionTask]()
     private let flickrClient:FlickrClient
+    private let pageRandomizer = PageRandomizer()
     var pin: Pin
     var loadPhotos: ((NSManagedObjectContext) -> Void)!
     
@@ -198,13 +199,13 @@ class RandomFlickrLoadingContext: LoadingContext {
 
 extension RandomFlickrLoadingContext {
     private func getRandomPageToLoad(photosAlbumLoadingState: PhotosAlbumLoadingState?) -> Int {
-        if let lastLoadedPage = photosAlbumLoadingState?.lastLoadedPage as? Int {
-            // todo: implement random number generation based on pages total
-            return lastLoadedPage + 1
-            
-        } else {
-            return 1
+        if let totalPages = photosAlbumLoadingState?.totalPages as? Int {
+            if totalPages != pageRandomizer.pages.count {
+                pageRandomizer.reset(totalPages, lastLoadedPage: photosAlbumLoadingState?.lastLoadedPage?.integerValue)
+            }
         }
+        
+        return pageRandomizer.nextPage()
     }
 }
 
@@ -235,3 +236,66 @@ extension RandomFlickrLoadingContext {
         }
     }
 }
+
+class PageRandomizer {
+    var pages = [Int]()
+    var counter = 0
+    
+    func nextPage() -> Int {
+        if(pages.count == 0){
+            return 1
+        }
+        
+        let maxIndexToPick = pages.count - counter
+        let randomIndex = Int(arc4random_uniform(UInt32(maxIndexToPick)))
+        
+        return pickIndex(randomIndex)
+    }
+    
+    private func pickIndex(index: Int) -> Int {
+        let moveTo = min(pages.count - counter, pages.count - 1)
+        let page = pages[index]
+        pages[index] = pages[moveTo]
+        pages[moveTo] = page
+        
+        counter = moveTo == 0 ? 0 : counter + 1
+        
+        return page
+    }
+    
+    func reset(var totalPages: Int, lastLoadedPage: Int?) {
+        if totalPages < 1 {
+            totalPages = 1
+        }
+        
+        pages = [Int](count: totalPages, repeatedValue: 1)
+        counter = 0
+        
+        for i in 1...totalPages {
+            pages[i - 1] = i
+        }
+        
+        if lastLoadedPage != nil &&
+            lastLoadedPage >= 1 &&
+            lastLoadedPage <= totalPages {
+                pickIndex(lastLoadedPage! - 1)
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
