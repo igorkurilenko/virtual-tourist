@@ -12,6 +12,10 @@ import MapKit
 
 typealias OnError = (NSError) -> Void
 
+func printError(error: NSError) {
+    print(error)
+}
+
 func ifErrorElse(error: NSError?, errorHandler: OnError, noErrorHandler: () -> Void) {
     if let error = error {
         errorHandler(error)

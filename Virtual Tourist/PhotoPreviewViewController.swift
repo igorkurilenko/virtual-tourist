@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-class PhotoPreviewViewController: UIViewController {
+class PhotoPreviewViewController: BaseUIViewController {
     var image:UIImage!
     @IBOutlet weak var imageView: UIImageView!
     

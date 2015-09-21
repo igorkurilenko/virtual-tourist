@@ -31,6 +31,9 @@
 		A5260A011BAB098E002CDC22 /* image-placeholder.png in Resources */ = {isa = PBXBuildFile; fileRef = A5260A001BAB098E002CDC22 /* image-placeholder.png */; };
 		A5260A041BAB1102002CDC22 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5260A031BAB1102002CDC22 /* Utils.swift */; };
 		A563744F1BB00CFD00C8A22F /* PhotoPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A563744E1BB00CFD00C8A22F /* PhotoPreviewViewController.swift */; settings = {ASSET_TAGS = (); }; };
+		A59F27061BB01CBE00DB70C2 /* VirtualTouristErrorDomain.swift in Sources */ = {isa = PBXBuildFile; fileRef = A59F27051BB01CBE00DB70C2 /* VirtualTouristErrorDomain.swift */; settings = {ASSET_TAGS = (); }; };
+		A59F27081BB0254700DB70C2 /* MessageNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = A59F27071BB0254700DB70C2 /* MessageNotification.swift */; settings = {ASSET_TAGS = (); }; };
+		A59F270A1BB0264500DB70C2 /* BaseUIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A59F27091BB0264500DB70C2 /* BaseUIViewController.swift */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,6 +75,9 @@
 		A5260A001BAB098E002CDC22 /* image-placeholder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "image-placeholder.png"; sourceTree = "<group>"; };
 		A5260A031BAB1102002CDC22 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		A563744E1BB00CFD00C8A22F /* PhotoPreviewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoPreviewViewController.swift; sourceTree = "<group>"; };
+		A59F27051BB01CBE00DB70C2 /* VirtualTouristErrorDomain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VirtualTouristErrorDomain.swift; sourceTree = "<group>"; };
+		A59F27071BB0254700DB70C2 /* MessageNotification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageNotification.swift; sourceTree = "<group>"; };
+		A59F27091BB0264500DB70C2 /* BaseUIViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseUIViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,6 +131,7 @@
 				A52609CD1BA1BA0D002CDC22 /* LaunchScreen.xib */,
 				A52609C11BA1BA0D002CDC22 /* Virtual_Tourist.xcdatamodeld */,
 				A52609BD1BA1BA0D002CDC22 /* Supporting Files */,
+				A59F27051BB01CBE00DB70C2 /* VirtualTouristErrorDomain.swift */,
 			);
 			path = "Virtual Tourist";
 			sourceTree = "<group>";
@@ -158,6 +165,7 @@
 		A52609E81BA7EE71002CDC22 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				A59F27091BB0264500DB70C2 /* BaseUIViewController.swift */,
 				A52609C41BA1BA0D002CDC22 /* MapViewController.swift */,
 				A52609C61BA1BA0D002CDC22 /* PhotoAlbumViewController.swift */,
 				A563744E1BB00CFD00C8A22F /* PhotoPreviewViewController.swift */,
@@ -218,6 +226,7 @@
 			isa = PBXGroup;
 			children = (
 				A5260A031BAB1102002CDC22 /* Utils.swift */,
+				A59F27071BB0254700DB70C2 /* MessageNotification.swift */,
 			);
 			name = Misc;
 			sourceTree = "<group>";
@@ -329,8 +338,10 @@
 				A563744F1BB00CFD00C8A22F /* PhotoPreviewViewController.swift in Sources */,
 				A50FE85E1BADFBFE00C937C5 /* Core.swift in Sources */,
 				A52609E71BA6C563002CDC22 /* MapRegionService.swift in Sources */,
+				A59F270A1BB0264500DB70C2 /* BaseUIViewController.swift in Sources */,
 				A52609F51BA9684E002CDC22 /* NSURLSessionExt.swift in Sources */,
 				A52609C31BA1BA0D002CDC22 /* Virtual_Tourist.xcdatamodeld in Sources */,
+				A59F27061BB01CBE00DB70C2 /* VirtualTouristErrorDomain.swift in Sources */,
 				A52609F31BA94C92002CDC22 /* FlickrClient.swift in Sources */,
 				A50FE85C1BADF66000C937C5 /* PhotosAlbumLoadingState.swift in Sources */,
 				A52609EB1BA7F490002CDC22 /* CurrentLocationService.swift in Sources */,
@@ -342,6 +353,7 @@
 				A52609C01BA1BA0D002CDC22 /* AppDelegate.swift in Sources */,
 				A52609C51BA1BA0D002CDC22 /* MapViewController.swift in Sources */,
 				A52609E51BA1C143002CDC22 /* CoreDataStackManager.swift in Sources */,
+				A59F27081BB0254700DB70C2 /* MessageNotification.swift in Sources */,
 				A52609FC1BA9AD3E002CDC22 /* PhotoCollectionViewCell.swift in Sources */,
 				A52609C71BA1BA0D002CDC22 /* PhotoAlbumViewController.swift in Sources */,
 				A52609FA1BA9ACC5002CDC22 /* SelectableCollectionViewCell.swift in Sources */,

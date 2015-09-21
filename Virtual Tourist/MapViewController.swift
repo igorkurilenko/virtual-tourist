@@ -11,7 +11,7 @@ import MapKit
 import CoreData
 import CoreLocation
 
-class MapViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsControllerDelegate {
+class MapViewController: BaseUIViewController, MKMapViewDelegate, NSFetchedResultsControllerDelegate {
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet var editPinsButton: UIBarButtonItem!
     @IBOutlet var doneEditPinsButton: UIBarButtonItem!
@@ -135,7 +135,10 @@ class MapViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
                 
             case .Ended:
                 saveCoreDataContext(self.sharedDataContext)
-                self.remoteDataProvider.loadPhotos(forPin: self.lastPin, context: self.sharedDataContext)
+                self.remoteDataProvider.loadPhotos(
+                    forPin: self.lastPin,
+                    context: self.sharedDataContext,
+                    onError: self.onError)
                 
             default:
                 return
@@ -179,6 +182,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
     func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
         didSelectAnnotationView(view)
     }
+    
 }
 
 extension Pin: MKAnnotation {
@@ -198,6 +202,14 @@ extension Pin: MKAnnotation {
 }
 
 extension MapViewController {
+    private func onError(error: NSError) {
+        dispatch_async(dispatch_get_main_queue()) {
+            let message = Message.create(error)
+            
+            self.displayErrorMessage(message)
+        }
+    }
+    
     private func removePin(pin: Pin) {
         remoteDataProvider.cancelLoading(forPin: pin)
         sharedDataContext.deleteObject(pin)

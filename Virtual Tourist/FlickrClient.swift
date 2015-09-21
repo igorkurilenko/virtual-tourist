@@ -18,9 +18,8 @@ protocol FlickrClient {
         onSuccess: NSDictionary -> Void) -> NSURLSessionDataTask
 }
 
-// todo: refactor this service
+// todo: refactor DefaultFlickrClient
 class DefaultFlickrClient: FlickrClient {
-    
     struct SearchPhotosConfig {
         static let BaseUrl = "https://api.flickr.com/services/rest/"
         static let MethodName = "flickr.photos.search"
@@ -35,11 +34,14 @@ class DefaultFlickrClient: FlickrClient {
         static let LatMax = 90.0
         static let LonMin = -180.0
         static let LonMax = 180.0
-        static let RequestTimeoutSeconds:NSTimeInterval = 60
+        static let RequestTimeoutSeconds:NSTimeInterval = 1
         static let PerPage = 21
     }
     
     var urlSession:NSURLSession
+    private static let UndefinedResponseError = NSError.createFlickrRequestError(
+        "An unknown error has occurred", localizedFailureReason: "Undefined Flickr response")
+    
     
     init(urlSession: NSURLSession) {
         self.urlSession = urlSession
@@ -55,8 +57,10 @@ class DefaultFlickrClient: FlickrClient {
                         let parsedResult = (try NSJSONSerialization.JSONObjectWithData(data!,
                             options: NSJSONReadingOptions.AllowFragments)) as! NSDictionary
                         
-                        onSuccess(parsedResult)
-
+                        self.validateSearchResult(parsedResult, onError: onError) {
+                            onSuccess(parsedResult)
+                        }
+                        
                     } catch {
                         onError(error as NSError)
                     }
@@ -85,7 +89,7 @@ class DefaultFlickrClient: FlickrClient {
         httpGet.timeoutInterval = SearchPhotosConfig.RequestTimeoutSeconds
         
         return httpGet
-    }        
+    }
     
     private func createBoundingBoxString(coordinate: CLLocationCoordinate2D) -> String {
         
@@ -99,5 +103,23 @@ class DefaultFlickrClient: FlickrClient {
         let top_right_lat = min(latitude + SearchPhotosConfig.BoundingBoxHalfHeight, SearchPhotosConfig.LatMax)
         
         return "\(bottom_left_lon),\(bottom_left_lat),\(top_right_lon),\(top_right_lat)"
+    }
+    
+    private func validateSearchResult(searchResult:NSDictionary, onError: OnError, onSuccess: () -> Void) {
+        if let photosDictionary = searchResult.valueForKey("photos") as? [String: AnyObject],
+            let photosArray = photosDictionary["photo"] as? [[String: AnyObject]] {
+                for photoDictionary in photosArray  {
+                    if photoDictionary["id"] == nil ||
+                        photoDictionary["url_m"] == nil ||
+                        photoDictionary["title"] == nil{
+                            onError(DefaultFlickrClient.UndefinedResponseError)
+                            return
+                    }
+                }
+                
+                onSuccess()
+        } else {
+            onError(DefaultFlickrClient.UndefinedResponseError)
+        }
     }
 }

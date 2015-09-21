@@ -10,7 +10,7 @@ import UIKit
 import MapKit
 import CoreData
 
-class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate,
+class PhotoAlbumViewController: BaseUIViewController, UICollectionViewDelegate,
 UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
     @IBOutlet var editCollectionButton: UIBarButtonItem!
     @IBOutlet var doneEditCollectionButton: UIBarButtonItem!
@@ -84,7 +84,7 @@ UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
     /// the app interrupts (e.g. crash) before photos search results recieved.
     private func ensurePhotos() {
         if pin.photosAlbumLoadingState.lastLoadedPage == nil {
-            remoteDataProvider.loadPhotos(forPin: pin, context: sharedDataContext)
+            remoteDataProvider.loadPhotos(forPin: pin, context: sharedDataContext, onError: onError)
         }
     }
     
@@ -115,7 +115,10 @@ UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
     }
     
     private func updateActivityIndicatorVisibility() {
-        if !isLoadingInProgress() {
+        if isLoadingInProgress() {
+            activityIndicator.startAnimating()
+
+        } else {
             activityIndicator.stopAnimating()
         }
     }
@@ -138,7 +141,7 @@ UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
         
         saveCoreDataContext(sharedDataContext)
         
-        remoteDataProvider.loadPhotos(forPin: pin, context: sharedDataContext)
+        remoteDataProvider.loadPhotos(forPin: pin, context: sharedDataContext, onError: onError)
         collectionView.reloadData()
     }
     
@@ -334,6 +337,14 @@ extension UICollectionView {
 }
 
 extension PhotoAlbumViewController {
+    private func onError(error: NSError) {
+        dispatch_async(dispatch_get_main_queue()) {
+            let message = Message.create(error)
+            
+            self.displayErrorMessage(message)
+        }
+    }
+    
     private func previewPhoto(photo:Photo) {
         if let filePath = photo.filePath {
             if NSFileManager.defaultManager().fileExistsAtPath(filePath) {

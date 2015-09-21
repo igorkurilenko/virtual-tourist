@@ -15,7 +15,7 @@ protocol RemoteDataProvider {
     /// Load photos and download relative images.
     /// Implied to use fetched results controller delegate
     /// to handle a photos load complete event.
-    func loadPhotos(forPin pin: Pin, context: NSManagedObjectContext)
+    func loadPhotos(forPin pin: Pin, context: NSManagedObjectContext, onError: OnError)
     
     func cancelLoading(forPin pin: Pin)
     
@@ -27,7 +27,7 @@ protocol RemoteDataProvider {
 protocol LoadingContext {
     var pin: Pin { get }
     
-    var loadPhotos: ((NSManagedObjectContext) -> Void)! { get }
+    var loadPhotos: ((NSManagedObjectContext, OnError) -> Void)! { get }
     
     func cancelLoading()
     
@@ -43,12 +43,12 @@ class RandomFlickrRemoteDataProvider: RemoteDataProvider {
         self.flickrClient = flickrClient
     }
     
-    func loadPhotos(forPin pin: Pin, context: NSManagedObjectContext) {
+    func loadPhotos(forPin pin: Pin, context: NSManagedObjectContext, onError: OnError) {
         if contextByCoordinate[pin.coordinate] == nil {
             contextByCoordinate[pin.coordinate] = createLoadingContext(forPin: pin)
         }
         
-        contextByCoordinate[pin.coordinate]!.loadPhotos(context)
+        contextByCoordinate[pin.coordinate]!.loadPhotos(context, onError)
     }
     
     func cancelLoading(forPin pin: Pin) {
@@ -72,7 +72,7 @@ class RandomFlickrLoadingContext: LoadingContext {
     private let flickrClient:FlickrClient
     private let pageRandomizer = PageRandomizer()
     var pin: Pin
-    var loadPhotos: ((NSManagedObjectContext) -> Void)!
+    var loadPhotos: ((NSManagedObjectContext, OnError) -> Void)!
     
     init(pin: Pin, flickrClient: FlickrClient) {
         self.pin = pin
@@ -100,15 +100,26 @@ class RandomFlickrLoadingContext: LoadingContext {
         imageDownloadingTasks.removeValueForKey(photo.id)
     }
     
-    func indeedLoadPhotos(context: NSManagedObjectContext) {
-        willLoadPhotos(forPin: pin, context: context)
-        
+    func indeedLoadPhotos(context: NSManagedObjectContext, onError: OnError) {
         let pageToLoad = getRandomPageToLoad(pin.photosAlbumLoadingState)
+        let decoratedOnError = decorateOnError(onError, pin: pin, context: context)
         
-        loadPhotos(forPin: pin, page: pageToLoad, context: context)
+        searchPhotosAndDownloadImages(forPin: pin,
+            page: pageToLoad,
+            context: context,
+            onError: decoratedOnError)
     }
     
-    private func willLoadPhotos(forPin pin: Pin, context: NSManagedObjectContext) {
+    private func decorateOnError(onError: OnError, pin: Pin, context: NSManagedObjectContext) -> OnError {
+        return { error in
+            self.didSearchPhotos(forPin: pin, context: context)
+            
+            onError(error)
+        }
+    }
+    
+    private func willSearchPhotos(forPin pin: Pin, context: NSManagedObjectContext) {
+        // to prevent redudant requests (do not load photos if photos are being loaded)
         loadPhotos = dummyLoadPhotos
         
         dispatch_async(dispatch_get_main_queue()) {
@@ -118,31 +129,38 @@ class RandomFlickrLoadingContext: LoadingContext {
         }
     }
     
-    private func loadPhotos(forPin pin: Pin, page: Int, context: NSManagedObjectContext) {
-        // todo: handle case if more than requested count is returned
-        searchPhotosTask = flickrClient.searchPhotos(pin.coordinate, page: page, onError: printError) { searchResult in
-            dispatch_async(dispatch_get_main_queue()) {
-                self.forEachPhotoDicitonaryInSearchResult(searchResult){ photoDictionary in
-                    self.ifPhotoDoesntExist(photoDictionary, context: context) {
-                        if let photo = Photo.create(photoDictionary, pin: pin, context: context) {
-                            self.downloadImage(forPhoto: photo, context: context)
-                        }
-                    }
-                }
-                
-                self.didLoadPhotos(forPin: pin, searchResult: searchResult, context: context)
-            }
+    private func didSearchPhotos(forPin pin: Pin, context: NSManagedObjectContext) {
+        dispatch_async(dispatch_get_main_queue()) {
+            pin.photosAlbumLoadingState.inProgress = false
+            
+            saveCoreDataContext(context)
+            
+            self.searchPhotosTask = nil
+            
+            self.loadPhotos = self.indeedLoadPhotos
         }
     }
     
-    private func didLoadPhotos(forPin pin: Pin, searchResult: NSDictionary, context: NSManagedObjectContext) {
-        updatePhotosAlbumLoadingState(searchResult, pin: pin, context: context)
-        
-        saveCoreDataContext(context)
-        
-        searchPhotosTask = nil
-        
-        loadPhotos = indeedLoadPhotos
+    
+    private func searchPhotosAndDownloadImages(forPin pin: Pin, page: Int,
+        context: NSManagedObjectContext, onError: OnError) {
+            willSearchPhotos(forPin: pin, context: context)
+            
+            searchPhotosTask = flickrClient.searchPhotos(pin.coordinate, page: page, onError: onError) { searchResult in
+                dispatch_async(dispatch_get_main_queue()) {
+                    self.forEachPhotoDicitonaryInSearchResult(searchResult){ photoDictionary in
+                        self.ifPhotoDoesntExist(photoDictionary, context: context) {
+                            if let photo = Photo.create(photoDictionary, pin: pin, context: context) {
+                                self.downloadImage(forPhoto: photo, context: context)
+                            }
+                        }
+                    }
+                    
+                    self.updatePhotosAlbumLoadingState(searchResult, pin: pin, context: context)
+                    
+                    self.didSearchPhotos(forPin: pin, context: context)
+                }
+            }
     }
     
     private func updatePhotosAlbumLoadingState(searchResult: NSDictionary, pin: Pin, context: NSManagedObjectContext) {
@@ -151,10 +169,6 @@ class RandomFlickrLoadingContext: LoadingContext {
             let lastLoadedPage = photosDictionary["page"] as? Int {
                 pin.photosAlbumLoadingState.totalPages = totalPages
                 pin.photosAlbumLoadingState.lastLoadedPage = lastLoadedPage
-                pin.photosAlbumLoadingState.inProgress = false
-                
-        } else {
-            // todo: handle this case
         }
     }
     
@@ -165,8 +179,6 @@ class RandomFlickrLoadingContext: LoadingContext {
             }
             
             imageDownloadingTasks[photo.id] = task
-        } else {
-            // todo: handle invalid url case
         }
     }
     
@@ -189,12 +201,7 @@ class RandomFlickrLoadingContext: LoadingContext {
         return filePath
     }
     
-    // todo: throw alert window
-    private func printError(error: NSError) {
-        print("ERROR: \(error)")
-    }
-    
-    func dummyLoadPhotos(context: NSManagedObjectContext) {}
+    func dummyLoadPhotos(context: NSManagedObjectContext, onError: OnError) {}
 }
 
 extension RandomFlickrLoadingContext {
