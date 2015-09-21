@@ -16,14 +16,10 @@ extension NSURLSession {
     func downloadImage(url: NSURL, onError: OnError, onSuccess: OnSuccess) -> NSURLSessionDataTask{
         let task = dataTaskWithURL(url) { data, response, error in
             ifErrorElse(error, errorHandler: onError){
-                if let image = UIImage(data: data!) {
-                    onSuccess(image)
-                } else {
-                    //todo: implement correct error handling
-                    onError(NSError(domain: "TODO", code: 1, userInfo: nil))
-                }
+                onSuccess(UIImage(data: data!)!)
             }
         }
+        
         task.resume()
         
         return task

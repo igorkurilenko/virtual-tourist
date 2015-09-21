@@ -52,14 +52,18 @@ UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        do {
-            try fetchedPhotosController.performFetch()
-        } catch _ {
-        }
+        performFetch()
         
         initUI()
         
         ensurePhotos()
+    }
+    
+    private func performFetch() {
+        do {
+            try fetchedPhotosController.performFetch()
+        } catch _ {
+        }
     }
     
     private func initUI() {
@@ -132,7 +136,7 @@ UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
     @IBAction func onEditCollectionTouched(sender: AnyObject) {
         processEditCollectionState()
     }
-    
+    // todo: refactor onNewCollectionButtonTouched
     @IBAction func onNewCollectionButtonTouched(sender: AnyObject) {
         for photo in fetchedPhotosController.fetchedObjects as! [Photo] {
             remoteDataProvider.cancelImageDownloading(forPin: pin, forPhoto: photo)
@@ -140,11 +144,13 @@ UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
         }
         
         saveCoreDataContext(sharedDataContext)
+        performFetch()
+        collectionView.reloadData()
         
         remoteDataProvider.loadPhotos(forPin: pin, context: sharedDataContext, onError: onError)
-        collectionView.reloadData()
     }
     
+    // todo: refactor onRemoveSelectedPhotosTouched
     @IBAction func onRemoveSelectedPhotosTouched(sender: AnyObject) {
         for indexPath in collectionView.indexPathsForSelectedItems()! {
             let photo = fetchedPhotosController.objectAtIndexPath(indexPath) as! Photo
@@ -242,6 +248,10 @@ UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
             if NSFileManager.defaultManager().fileExistsAtPath(photoFilePath) {
                 cell.photoImageView.image = UIImage(contentsOfFile: photoFilePath)
             }
+            
+        } else {
+            cell.loadingIndicator.startAnimating()
+            cell.photoImageView.image = UIImage(named: "ImagePlaceholder")
         }
         
         updatePhotoCellCheckmarkVisibility(cell)

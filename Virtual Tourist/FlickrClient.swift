@@ -14,6 +14,7 @@ protocol FlickrClient {
     func searchPhotos(
         coordinate: CLLocationCoordinate2D,
         page: Int,
+        perPage: Int,
         onError: OnError,
         onSuccess: NSDictionary -> Void) -> NSURLSessionDataTask
 }
@@ -34,8 +35,7 @@ class DefaultFlickrClient: FlickrClient {
         static let LatMax = 90.0
         static let LonMin = -180.0
         static let LonMax = 180.0
-        static let RequestTimeoutSeconds:NSTimeInterval = 1
-        static let PerPage = 21
+        static let RequestTimeoutSeconds:NSTimeInterval = 60
     }
     
     var urlSession:NSURLSession
@@ -47,9 +47,9 @@ class DefaultFlickrClient: FlickrClient {
         self.urlSession = urlSession
     }
     
-    func searchPhotos(coordinate: CLLocationCoordinate2D, page: Int,
+    func searchPhotos(coordinate: CLLocationCoordinate2D, page: Int, perPage: Int,
         onError: OnError, onSuccess: NSDictionary -> Void) -> NSURLSessionDataTask {
-            let request = createSearchPhotoRequest(coordinate, page: page)
+            let request = createSearchPhotoRequest(coordinate, page: page, perPage: perPage)
             
             let task = urlSession.dataTaskWithRequest(request) {data, response, downloadError in
                 ifErrorElse(downloadError, errorHandler: onError) {
@@ -72,7 +72,7 @@ class DefaultFlickrClient: FlickrClient {
             return task
     }
     
-    private func createSearchPhotoRequest(coordinate: CLLocationCoordinate2D, page: Int) -> NSURLRequest {
+    private func createSearchPhotoRequest(coordinate: CLLocationCoordinate2D, page: Int, perPage: Int) -> NSURLRequest {
         let queryParams = [
             "method": SearchPhotosConfig.MethodName,
             "api_key": SearchPhotosConfig.ApiKey,
@@ -82,7 +82,7 @@ class DefaultFlickrClient: FlickrClient {
             "format": SearchPhotosConfig.DataFormat,
             "nojsoncallback": SearchPhotosConfig.NoJsonCallback,
             "page": "\(page)",
-            "per_page": "\(SearchPhotosConfig.PerPage)"
+            "per_page": "\(perPage)"
         ]
         
         let httpGet = HttpRequest.createGet(SearchPhotosConfig.BaseUrl, queryParams: queryParams)!
@@ -107,7 +107,9 @@ class DefaultFlickrClient: FlickrClient {
     
     private func validateSearchResult(searchResult:NSDictionary, onError: OnError, onSuccess: () -> Void) {
         if let photosDictionary = searchResult.valueForKey("photos") as? [String: AnyObject],
-            let photosArray = photosDictionary["photo"] as? [[String: AnyObject]] {
+            let photosArray = photosDictionary["photo"] as? [[String: AnyObject]],
+            let _ = photosDictionary["pages"] as? Int,
+            let _ = photosDictionary["page"] as? Int {
                 for photoDictionary in photosArray  {
                     if photoDictionary["id"] == nil ||
                         photoDictionary["url_m"] == nil ||

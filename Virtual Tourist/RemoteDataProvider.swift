@@ -73,6 +73,8 @@ class RandomFlickrLoadingContext: LoadingContext {
     private let pageRandomizer = PageRandomizer()
     var pin: Pin
     var loadPhotos: ((NSManagedObjectContext, OnError) -> Void)!
+    static let SearchPhotosPerPage = 21
+    static let FlickrDoesNotAllowToSearchMore = 4000
     
     init(pin: Pin, flickrClient: FlickrClient) {
         self.pin = pin
@@ -146,27 +148,33 @@ class RandomFlickrLoadingContext: LoadingContext {
         context: NSManagedObjectContext, onError: OnError) {
             willSearchPhotos(forPin: pin, context: context)
             
-            searchPhotosTask = flickrClient.searchPhotos(pin.coordinate, page: page, onError: onError) { searchResult in
-                dispatch_async(dispatch_get_main_queue()) {
-                    self.forEachPhotoDicitonaryInSearchResult(searchResult){ photoDictionary in
-                        self.ifPhotoDoesntExist(photoDictionary, context: context) {
-                            if let photo = Photo.create(photoDictionary, pin: pin, context: context) {
-                                self.downloadImage(forPhoto: photo, context: context)
+            searchPhotosTask = flickrClient.searchPhotos(pin.coordinate,
+                page: page, perPage: RandomFlickrLoadingContext.SearchPhotosPerPage,
+                onError: onError) { searchResult in
+                    dispatch_async(dispatch_get_main_queue()) {
+                        self.forEachPhotoDicitonaryInSearchResult(searchResult){ photoDictionary in
+                            self.ifPhotoDoesntExist(photoDictionary, context: context) {
+                                if let photo = Photo.create(photoDictionary, pin: pin, context: context) {
+                                    self.downloadImage(forPhoto: photo, context: context)
+                                }
                             }
                         }
+                        
+                        self.updatePhotosAlbumLoadingState(searchResult, pin: pin, context: context)
+                        
+                        self.didSearchPhotos(forPin: pin, context: context)
                     }
-                    
-                    self.updatePhotosAlbumLoadingState(searchResult, pin: pin, context: context)
-                    
-                    self.didSearchPhotos(forPin: pin, context: context)
-                }
             }
     }
     
     private func updatePhotosAlbumLoadingState(searchResult: NSDictionary, pin: Pin, context: NSManagedObjectContext) {
         if let photosDictionary = searchResult.valueForKey("photos") as? [String: AnyObject],
-            let totalPages = photosDictionary["pages"] as? Int,
+            let totalPagesInResponse = photosDictionary["pages"] as? Int,
             let lastLoadedPage = photosDictionary["page"] as? Int {
+                let totalPages = min((RandomFlickrLoadingContext.FlickrDoesNotAllowToSearchMore /
+                    RandomFlickrLoadingContext.SearchPhotosPerPage) + 1,
+                    totalPagesInResponse)
+                
                 pin.photosAlbumLoadingState.totalPages = totalPages
                 pin.photosAlbumLoadingState.lastLoadedPage = lastLoadedPage
         }
