@@ -13,7 +13,7 @@ import CoreData
 class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate,
 UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
     @IBOutlet var editCollectionButton: UIBarButtonItem!
-    @IBOutlet var cancelEditCollectionButton: UIBarButtonItem!
+    @IBOutlet var doneEditCollectionButton: UIBarButtonItem!
     @IBOutlet weak var removeSelectedPhotosButton: UIBarButtonItem!
     @IBOutlet weak var newCollectionButton: UIBarButtonItem!
     @IBOutlet weak var editCollectionOnToolbar: UIToolbar!
@@ -113,8 +113,7 @@ UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
     }
     
     private func updateRemoveSelectedPhotosButtonVisiblity() {
-        removeSelectedPhotosButton.enabled =
-            collectionView.indexPathsForSelectedItems()!.count > 0
+        removeSelectedPhotosButton.enabled = collectionView.hasSelectedItems
     }
     
     // MARK: - Event handlers
@@ -127,6 +126,11 @@ UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
     }
     
     @IBAction func onRemoveSelectedPhotosTouched(sender: AnyObject) {
+        for indexPath in collectionView.indexPathsForSelectedItems()! {
+            let photo = fetchedPhotosController.objectAtIndexPath(indexPath) as! Photo
+            
+            removePhoto(photo)
+        }
     }
     
     private func onPhotosLoadingStateChanged() {
@@ -137,7 +141,7 @@ UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
     // MARK: - Edit collection states
     
     private func editCollectionOn() {
-        navigationItem.rightBarButtonItem = cancelEditCollectionButton
+        navigationItem.rightBarButtonItem = doneEditCollectionButton
         editCollectionOffToolbar.hidden = true
         editCollectionOnToolbar.hidden = false
         processEditCollectionState = editCollectionOff
@@ -243,6 +247,7 @@ UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
                 batchUpdates.append {
                     self.collectionView.deleteItemsAtIndexPaths([indexPath!])
                 }
+                updateNoImagesLabelVisibility()
                 
             default:
                 return
@@ -290,6 +295,19 @@ extension PhotoAlbumViewController {
     }
 }
 
+extension UICollectionView {
+    
+    var hasSelectedItems:Bool {
+        if let paths = indexPathsForSelectedItems() {
+            return !paths.isEmpty
+        
+        } else {
+            return false
+        }
+    }
+    
+}
+
 extension PhotoAlbumViewController {
     private func hasPhotos() -> Bool {
         return !pin.photos.isEmpty
@@ -306,5 +324,11 @@ extension PhotoAlbumViewController {
         let center = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
         
         return MKCoordinateRegion(center: center, span: span)
+    }
+    
+    private func removePhoto(photo: Photo) {
+        remoteDataProvider.cancelImageDownloading(forPin: pin, forPhoto: photo)
+        
+        sharedDataContext.deleteObject(photo)
     }
 }

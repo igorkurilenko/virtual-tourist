@@ -139,6 +139,8 @@ class RandomFlickrLoadingContext: LoadingContext {
         
         saveCoreDataContext(context)
         
+        searchPhotosTask = nil
+        
         loadPhotos = indeedLoadPhotos
     }
     
@@ -158,16 +160,22 @@ class RandomFlickrLoadingContext: LoadingContext {
     private func downloadImage(forPhoto photo: Photo, context: NSManagedObjectContext) {
         if let nsUrl = NSURL(string: photo.url) {
             let task = Core.instance().sharedUrlSession.downloadImage(nsUrl, onError: printError) { image in
-                dispatch_async(dispatch_get_main_queue()) {
-                    photo.filePath = self.saveImage(image)
-                    
-                    saveCoreDataContext(context)
-                }
+                self.didDownloadImage(image, forPhoto: photo, context: context)
             }
             
             imageDownloadingTasks[photo.id] = task
         } else {
             // todo: handle invalid url case
+        }
+    }
+    
+    private func didDownloadImage(image: UIImage, forPhoto photo: Photo, context: NSManagedObjectContext) {
+        dispatch_async(dispatch_get_main_queue()) {
+            self.imageDownloadingTasks.removeValueForKey(photo.id)
+            
+            photo.filePath = self.saveImage(image)
+            
+            saveCoreDataContext(context)
         }
     }
     

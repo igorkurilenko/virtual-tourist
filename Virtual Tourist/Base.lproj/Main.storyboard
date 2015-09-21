@@ -191,8 +191,8 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="cancelEditCollectionButton" destination="O1O-Hn-YiK" id="a23-AW-izO"/>
                         <outlet property="collectionView" destination="OcN-LL-8sg" id="tun-KU-Xrl"/>
+                        <outlet property="doneEditCollectionButton" destination="O1O-Hn-YiK" id="Dgq-3d-KO7"/>
                         <outlet property="editCollectionButton" destination="xTO-hb-hjw" id="fxX-ZI-tsO"/>
                         <outlet property="editCollectionOffToolbar" destination="UGg-06-1S3" id="4Qr-Gm-3dw"/>
                         <outlet property="editCollectionOnToolbar" destination="sls-Q0-EM6" id="89h-DQ-eVn"/>
@@ -208,7 +208,7 @@
                         <action selector="onEditCollectionTouched:" destination="YEy-Ry-uId" id="7b3-97-xXL"/>
                     </connections>
                 </barButtonItem>
-                <barButtonItem title="Cancel" id="O1O-Hn-YiK">
+                <barButtonItem title="Done" id="O1O-Hn-YiK">
                     <connections>
                         <action selector="onEditCollectionTouched:" destination="YEy-Ry-uId" id="UjJ-IR-Ztj"/>
                     </connections>
