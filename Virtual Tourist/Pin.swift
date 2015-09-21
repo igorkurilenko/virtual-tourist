@@ -12,7 +12,7 @@ import MapKit
 
 @objc(Pin)
 
-class Pin: NSManagedObject{
+class Pin: NSManagedObject { 
     @NSManaged var latitude:NSNumber
     @NSManaged var longitude:NSNumber
     @NSManaged var photos: [Photo]

@@ -21,9 +21,10 @@ UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var noImagesLabel: UILabel!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     var pin:Pin!
     private var processEditCollectionState:(() -> Void)!
-    private var didSelectItemAtIndexPath: (() -> Void)!
+    private var didSelectItemAtIndexPath: ((indexPath: NSIndexPath) -> Void)!
     private var didDeselectItemAtIndexPath: (() -> Void)!
     private var updatePhotoCellCheckmarkVisibility: (PhotoAlbumCell -> Void)!
     private lazy var sharedDataContext:NSManagedObjectContext = {
@@ -66,6 +67,7 @@ UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
         adjustCellSize()
         collectionView.allowsMultipleSelection = true
         updateMapView()
+        updateActivityIndicatorVisibility()
         updateNoImagesLabelVisibility()
         updateNewCollectionButtonVisibility()
     }
@@ -108,8 +110,14 @@ UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
         noImagesLabel.hidden = isLoadingInProgress() || hasPhotos()
     }
     
-    private func updateNewCollectionButtonVisibility(){
+    private func updateNewCollectionButtonVisibility() {
         newCollectionButton.enabled = !isLoadingInProgress()
+    }
+    
+    private func updateActivityIndicatorVisibility() {
+        if !isLoadingInProgress() {
+            activityIndicator.stopAnimating()
+        }
     }
     
     private func updateRemoveSelectedPhotosButtonVisiblity() {
@@ -146,6 +154,7 @@ UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
     }
     
     private func onPhotosLoadingStateChanged() {
+        updateActivityIndicatorVisibility()
         updateNoImagesLabelVisibility()
         updateNewCollectionButtonVisibility()
     }
@@ -158,7 +167,9 @@ UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
         editCollectionOnToolbar.hidden = false
         processEditCollectionState = editCollectionOff
         collectionView.reloadData()
-        didSelectItemAtIndexPath = updateRemoveSelectedPhotosButtonVisiblity
+        didSelectItemAtIndexPath = { indexPath in
+            self.updateRemoveSelectedPhotosButtonVisiblity()
+        }
         didDeselectItemAtIndexPath = updateRemoveSelectedPhotosButtonVisiblity
         updatePhotoCellCheckmarkVisibility = {
             $0.checkmark.hidden = false
@@ -171,8 +182,10 @@ UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
         editCollectionOffToolbar.hidden = false
         processEditCollectionState = editCollectionOn
         collectionView.reloadData()
-        didSelectItemAtIndexPath = {
-            // todo: perform segue to image view
+        didSelectItemAtIndexPath = { indexPath in
+            let photo = self.fetchedPhotosController.objectAtIndexPath(indexPath) as! Photo
+            self.previewPhoto(photo)
+            self.collectionView.deselectItemAtIndexPath(indexPath, animated: false)
         }
         didDeselectItemAtIndexPath = {}
         updatePhotoCellCheckmarkVisibility = {
@@ -189,7 +202,7 @@ UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
     
     func collectionView(collectionView: UICollectionView,
         didSelectItemAtIndexPath indexPath: NSIndexPath) {
-            didSelectItemAtIndexPath()
+            didSelectItemAtIndexPath(indexPath: indexPath)
     }
     
     func collectionView(collectionView: UICollectionView,
@@ -321,6 +334,22 @@ extension UICollectionView {
 }
 
 extension PhotoAlbumViewController {
+    private func previewPhoto(photo:Photo) {
+        if let filePath = photo.filePath {
+            if NSFileManager.defaultManager().fileExistsAtPath(filePath) {
+                let photoPreviewViewController = self.getPhotoPreviewViewController()
+                photoPreviewViewController.image = UIImage(contentsOfFile: filePath)
+                
+                self.navigationController!.pushViewController(photoPreviewViewController, animated: true)
+            }
+        }
+    }
+    
+    private func getPhotoPreviewViewController() -> PhotoPreviewViewController {
+            return storyboard!.instantiateViewControllerWithIdentifier("PhotoPreviewViewController")
+                as! PhotoPreviewViewController
+    }
+    
     private func hasPhotos() -> Bool {
         return !pin.photos.isEmpty
     }

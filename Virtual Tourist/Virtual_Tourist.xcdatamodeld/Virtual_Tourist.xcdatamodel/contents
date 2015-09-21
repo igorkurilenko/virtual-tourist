@@ -9,8 +9,8 @@
     </entity>
     <entity name="PhotosAlbumLoadingState" representedClassName="PhotosAlbumLoadingState" syncable="YES">
         <attribute name="inProgress" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
-        <attribute name="lastLoadedPage" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
-        <attribute name="totalPages" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="lastLoadedPage" optional="YES" attributeType="Integer 64" syncable="YES"/>
+        <attribute name="totalPages" optional="YES" attributeType="Integer 64" syncable="YES"/>
         <relationship name="pin" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Pin" inverseName="photosAlbumLoadingState" inverseEntity="Pin" syncable="YES"/>
     </entity>
     <entity name="Pin" representedClassName="Pin" syncable="YES">

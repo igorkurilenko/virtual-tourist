@@ -30,6 +30,7 @@
 		A52609FC1BA9AD3E002CDC22 /* PhotoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52609FB1BA9AD3E002CDC22 /* PhotoCollectionViewCell.swift */; };
 		A5260A011BAB098E002CDC22 /* image-placeholder.png in Resources */ = {isa = PBXBuildFile; fileRef = A5260A001BAB098E002CDC22 /* image-placeholder.png */; };
 		A5260A041BAB1102002CDC22 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5260A031BAB1102002CDC22 /* Utils.swift */; };
+		A563744F1BB00CFD00C8A22F /* PhotoPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A563744E1BB00CFD00C8A22F /* PhotoPreviewViewController.swift */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +71,7 @@
 		A52609FB1BA9AD3E002CDC22 /* PhotoCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoCollectionViewCell.swift; sourceTree = "<group>"; };
 		A5260A001BAB098E002CDC22 /* image-placeholder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "image-placeholder.png"; sourceTree = "<group>"; };
 		A5260A031BAB1102002CDC22 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		A563744E1BB00CFD00C8A22F /* PhotoPreviewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoPreviewViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -158,6 +160,7 @@
 			children = (
 				A52609C41BA1BA0D002CDC22 /* MapViewController.swift */,
 				A52609C61BA1BA0D002CDC22 /* PhotoAlbumViewController.swift */,
+				A563744E1BB00CFD00C8A22F /* PhotoPreviewViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -323,6 +326,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A563744F1BB00CFD00C8A22F /* PhotoPreviewViewController.swift in Sources */,
 				A50FE85E1BADFBFE00C937C5 /* Core.swift in Sources */,
 				A52609E71BA6C563002CDC22 /* MapRegionService.swift in Sources */,
 				A52609F51BA9684E002CDC22 /* NSURLSessionExt.swift in Sources */,

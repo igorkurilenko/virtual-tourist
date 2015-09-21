@@ -75,6 +75,39 @@
             </objects>
             <point key="canvasLocation" x="552" y="64"/>
         </scene>
+        <!--Photo Preview View Controller-->
+        <scene sceneID="DDz-EV-hyw">
+            <objects>
+                <viewController storyboardIdentifier="PhotoPreviewViewController" id="fwl-Ky-t6D" customClass="PhotoPreviewViewController" customModule="Virtual_Tourist" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="z5p-AC-xL9"/>
+                        <viewControllerLayoutGuide type="bottom" id="bbS-3u-NKc"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="D3C-0R-qcT">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="w20-ft-Hba">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="darkTextColor"/>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="bbS-3u-NKc" firstAttribute="top" secondItem="w20-ft-Hba" secondAttribute="bottom" id="042-t2-fCf"/>
+                            <constraint firstItem="w20-ft-Hba" firstAttribute="leading" secondItem="D3C-0R-qcT" secondAttribute="leading" id="Drr-hV-9hT"/>
+                            <constraint firstAttribute="trailing" secondItem="w20-ft-Hba" secondAttribute="trailing" id="SFd-MI-Mod"/>
+                            <constraint firstItem="w20-ft-Hba" firstAttribute="top" secondItem="D3C-0R-qcT" secondAttribute="top" id="y4c-rv-CRn"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="imageView" destination="w20-ft-Hba" id="My0-VR-69M"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ueS-c9-VbP" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1972" y="64"/>
+        </scene>
         <!--Photo Album View Controller-->
         <scene sceneID="WJq-NH-Ygv">
             <objects>
@@ -176,6 +209,9 @@
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="RhB-ih-yhn">
+                                <rect key="frame" x="290" y="290" width="20" height="20"/>
+                            </activityIndicatorView>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" zoomEnabled="NO" scrollEnabled="NO" rotateEnabled="NO" pitchEnabled="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lXQ-dr-85h">
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="150"/>
                                 <constraints>
@@ -187,6 +223,7 @@
                         <constraints>
                             <constraint firstItem="UGg-06-1S3" firstAttribute="leading" secondItem="M3x-qf-sq9" secondAttribute="leading" id="1X0-YG-1ib"/>
                             <constraint firstAttribute="trailing" secondItem="UGg-06-1S3" secondAttribute="trailing" id="5mJ-Vg-1Q1"/>
+                            <constraint firstItem="RhB-ih-yhn" firstAttribute="centerX" secondItem="M3x-qf-sq9" secondAttribute="centerX" id="7bs-Yb-kV4"/>
                             <constraint firstItem="ghL-bp-zqs" firstAttribute="centerY" secondItem="M3x-qf-sq9" secondAttribute="centerY" id="Bql-DI-t5U"/>
                             <constraint firstItem="ghL-bp-zqs" firstAttribute="centerX" secondItem="M3x-qf-sq9" secondAttribute="centerX" id="CIo-0E-EXd"/>
                             <constraint firstAttribute="trailing" secondItem="lXQ-dr-85h" secondAttribute="trailing" id="CXk-2g-d0Q"/>
@@ -197,12 +234,14 @@
                             <constraint firstItem="OcN-LL-8sg" firstAttribute="top" secondItem="lXQ-dr-85h" secondAttribute="bottom" id="SBz-mP-skB"/>
                             <constraint firstItem="Z0P-NX-Tgb" firstAttribute="top" secondItem="sls-Q0-EM6" secondAttribute="bottom" id="Saf-5d-bdw"/>
                             <constraint firstItem="Z0P-NX-Tgb" firstAttribute="top" secondItem="UGg-06-1S3" secondAttribute="bottom" id="WkY-mY-lEz"/>
+                            <constraint firstItem="RhB-ih-yhn" firstAttribute="centerY" secondItem="M3x-qf-sq9" secondAttribute="centerY" id="jNQ-q0-Mso"/>
                             <constraint firstItem="lXQ-dr-85h" firstAttribute="leading" secondItem="M3x-qf-sq9" secondAttribute="leading" id="nEX-I1-SqQ"/>
                             <constraint firstAttribute="trailing" secondItem="OcN-LL-8sg" secondAttribute="trailing" id="ttS-M6-EmP"/>
                             <constraint firstAttribute="trailing" secondItem="sls-Q0-EM6" secondAttribute="trailing" id="uIy-Zb-ePH"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="activityIndicator" destination="RhB-ih-yhn" id="BPA-Hw-uJs"/>
                         <outlet property="collectionView" destination="OcN-LL-8sg" id="tun-KU-Xrl"/>
                         <outlet property="doneEditCollectionButton" destination="O1O-Hn-YiK" id="Dgq-3d-KO7"/>
                         <outlet property="editCollectionButton" destination="xTO-hb-hjw" id="fxX-ZI-tsO"/>
