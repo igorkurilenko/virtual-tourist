@@ -51,7 +51,7 @@ class CoreDataStackManager {
     lazy var managedObjectContext:NSManagedObjectContext = {
         let managedObjectContext = NSManagedObjectContext()
         managedObjectContext.persistentStoreCoordinator = self.persistentStoreCoordinator
-        managedObjectContext.retainsRegisteredObjects = true
+//        managedObjectContext.retainsRegisteredObjects = true
         
         return managedObjectContext
     }()        

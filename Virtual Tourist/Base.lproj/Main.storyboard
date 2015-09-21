@@ -56,17 +56,29 @@
                         <barButtonItem key="backBarButtonItem" title="OK" id="ZRC-5E-4cB"/>
                     </navigationItem>
                     <connections>
+                        <outlet property="doneEditPinsButton" destination="h0z-gk-fZO" id="k4a-Mx-9lB"/>
+                        <outlet property="editPinsButton" destination="O95-Yz-y5s" id="hcS-iI-fIj"/>
                         <outlet property="mapView" destination="Hyr-CG-G9i" id="1KU-eI-eRq"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3tu-ry-9OB" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <barButtonItem title="Edit" id="O95-Yz-y5s">
+                    <connections>
+                        <action selector="onEditPinsTouched:" destination="5Wf-bf-xQw" id="T2O-N8-g3r"/>
+                    </connections>
+                </barButtonItem>
+                <barButtonItem title="Done" id="h0z-gk-fZO">
+                    <connections>
+                        <action selector="onEditPinsTouched:" destination="5Wf-bf-xQw" id="zie-cR-FIo"/>
+                    </connections>
+                </barButtonItem>
             </objects>
             <point key="canvasLocation" x="552" y="64"/>
         </scene>
         <!--Photo Album View Controller-->
         <scene sceneID="WJq-NH-Ygv">
             <objects>
-                <viewController storyboardIdentifier="CollectionViewController" automaticallyAdjustsScrollViewInsets="NO" id="YEy-Ry-uId" customClass="PhotoAlbumViewController" customModule="Virtual_Tourist" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="PhotoAlbumViewController" automaticallyAdjustsScrollViewInsets="NO" id="YEy-Ry-uId" customClass="PhotoAlbumViewController" customModule="Virtual_Tourist" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="HoY-rQ-t1f"/>
                         <viewControllerLayoutGuide type="bottom" id="Z0P-NX-Tgb"/>

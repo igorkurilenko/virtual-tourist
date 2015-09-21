@@ -130,6 +130,8 @@ UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
             let photo = fetchedPhotosController.objectAtIndexPath(indexPath) as! Photo
             
             removePhoto(photo)
+            
+            saveCoreDataContext(self.sharedDataContext)
         }
     }
     

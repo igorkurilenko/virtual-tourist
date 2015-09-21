@@ -13,7 +13,12 @@ import CoreLocation
 
 class MapViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsControllerDelegate {
     @IBOutlet weak var mapView: MKMapView!
+    @IBOutlet var editPinsButton: UIBarButtonItem!
+    @IBOutlet var doneEditPinsButton: UIBarButtonItem!
     private var lastPin:Pin!
+    private var processEditPinsState:(() -> Void)!
+    private var handleLongPress:((UIGestureRecognizer) -> Void)!
+    private var didSelectAnnotationView: ((MKAnnotationView) -> Void)!
     private let mapRegionService = WithCurrentLocationDetectionIfNotExists(
         decoratee: MapRegionArchiverService())
     private lazy var sharedDataContext: NSManagedObjectContext = {
@@ -46,13 +51,13 @@ class MapViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
         } catch _ {
         }
         
-        initMapView()
+        initUI()
     }
     
-    private func initMapView() {
+    private func initUI() {
+        editPinsOff()
         initGestureRecognizer()
         initMapRegion()
-        
         mapView.addAnnotations(fetchedPinsController.fetchedObjects as! [Pin])
     }
     
@@ -74,35 +79,68 @@ class MapViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
         }
     }
     
+    // MARK: - Event handlers
+    
     func onLongPress(gestureRecognizer: UIGestureRecognizer) {
-        switch gestureRecognizer.state {
-        case .Began:
-            let coordinate = getGestureCoordinate(gestureRecognizer)
-            addPin(coordinate)
-            
-        case .Changed:
-            let coordinate = getGestureCoordinate(gestureRecognizer)
-            lastPin.coordinate = coordinate
-            
-        case .Ended:
-            saveCoreDataContext(sharedDataContext)
-            remoteDataProvider.loadPhotos(forPin: lastPin, context: sharedDataContext)
-            
-        default:
-            return
+        handleLongPress(gestureRecognizer)
+    }
+    
+    @IBAction func onEditPinsTouched(sender: AnyObject) {
+        processEditPinsState()
+    }
+    
+    // MARK: - Edit map view pins states
+    
+    private func editPinsOn() {
+        navigationItem.rightBarButtonItem = doneEditPinsButton
+        processEditPinsState = editPinsOff
+        
+        didSelectAnnotationView = { view in
+            self.destructiveConfirm("Remove"){ action in
+                let pin = view.annotation as! Pin
+                
+                self.removePin(pin)
+                
+                saveCoreDataContext(self.sharedDataContext)
+            }
+        }
+        
+        handleLongPress = { gestureRecognizer in
         }
     }
     
-    private func getGestureCoordinate(gestureRecognizer: UIGestureRecognizer) -> CLLocationCoordinate2D {
-            let pressPoint = gestureRecognizer.locationInView(mapView)
-            
-            return mapView.convertPoint(pressPoint, toCoordinateFromView: mapView)
-    }
-    
-    private func addPin(coordinate: CLLocationCoordinate2D) {
-        lastPin = Pin(coordinate: coordinate, context: sharedDataContext)
+    private func editPinsOff() {
+        navigationItem.rightBarButtonItem = editPinsButton
+        processEditPinsState = editPinsOn
         
-        mapView.addAnnotation(lastPin)
+        didSelectAnnotationView = { view in
+            let colletionViewController = self.getPhotoAlbumViewController()
+            colletionViewController.pin = view.annotation as! Pin
+            
+            self.navigationController!.pushViewController(colletionViewController, animated: true)
+            // In case if user goes back from album view and then wants to open album again:
+            // if pin is selected it's impossible to open album again.
+            self.mapView.deselectAnnotation(view.annotation, animated: false)
+        }
+        
+        handleLongPress = { gestureRecognizer in
+            switch gestureRecognizer.state {
+            case .Began:
+                let coordinate = self.getGestureCoordinate(gestureRecognizer)
+                self.addPin(coordinate)
+                
+            case .Changed:
+                let coordinate = self.getGestureCoordinate(gestureRecognizer)
+                self.lastPin.coordinate = coordinate
+                
+            case .Ended:
+                saveCoreDataContext(self.sharedDataContext)
+                self.remoteDataProvider.loadPhotos(forPin: self.lastPin, context: self.sharedDataContext)
+                
+            default:
+                return
+            }
+        }
     }
     
     // MARK: - Map view delegate
@@ -139,17 +177,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
     }
     
     func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
-        let colletionViewController =
-        storyboard!.instantiateViewControllerWithIdentifier("CollectionViewController")
-            as! PhotoAlbumViewController
-        
-        colletionViewController.pin = view.annotation as! Pin
-        
-        navigationController!.pushViewController(colletionViewController, animated: true)
-        
-        // In case if user goes back from collection view and then wants to open collection again.
-        // If pin is selected it's impossible to open collection again.
-        mapView.deselectAnnotation(view.annotation, animated: false)
+        didSelectAnnotationView(view)
     }
 }
 
@@ -169,7 +197,39 @@ extension Pin: MKAnnotation {
     }
 }
 
-
+extension MapViewController {
+    private func removePin(pin: Pin) {
+        remoteDataProvider.cancelLoading(forPin: pin)
+        sharedDataContext.deleteObject(pin)
+        mapView.removeAnnotation(pin)
+    }
+    
+    private func destructiveConfirm(title: String, handler: (UIAlertAction) -> Void) {
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: UIAlertControllerStyle.ActionSheet)
+        let alertAction = UIAlertAction(title: title, style: UIAlertActionStyle.Destructive, handler: handler)
+        
+        alertController.addAction(alertAction)
+        
+        presentViewController(alertController, animated: true, completion: nil)
+    }
+    
+    private func getGestureCoordinate(gestureRecognizer: UIGestureRecognizer) -> CLLocationCoordinate2D {
+        let pressPoint = gestureRecognizer.locationInView(mapView)
+        
+        return mapView.convertPoint(pressPoint, toCoordinateFromView: mapView)
+    }
+    
+    private func addPin(coordinate: CLLocationCoordinate2D) {
+        lastPin = Pin(coordinate: coordinate, context: sharedDataContext)
+        
+        mapView.addAnnotation(lastPin)
+    }
+    
+    private func getPhotoAlbumViewController() -> PhotoAlbumViewController {
+        return storyboard!.instantiateViewControllerWithIdentifier("PhotoAlbumViewController")
+            as! PhotoAlbumViewController
+    }
+}
 
 
 
